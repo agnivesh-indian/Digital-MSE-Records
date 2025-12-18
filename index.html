@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital MSE Records</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            transition: background-color 0.3s;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            min-height: 80px;
+        }
+        .dark-mode {
+            background-color: #333;
+            color: #f4f4f4;
+        }
+        .dark-mode .container {
+            background: #444;
+        }
+        .dark-mode h1, .dark-mode h2 {
+            color: #f4f4f4;
+        }
+        .dark-mode textarea {
+            background-color: #555;
+            color: #f4f4f4;
+            border-color: #666;
+        }
+        .button-container {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        #theme-toggle {
+            background-color: #666;
+            color: white;
+        }
+        #save-btn, #clear-btn {
+            background-color: #007bff;
+            color: white;
+        }
+        #pdf-btn, #docx-btn {
+            background-color: #28a745;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="button-container">
+            <button id="theme-toggle">Toggle Dark Mode</button>
+        </div>
+        <h1>Psychiatric History and Mental Status Examination</h1>
+
+        <section id="identifying-data">
+            <h2>Identifying Data</h2>
+            <textarea placeholder="Enter identifying data..."></textarea>
+        </section>
+
+        <section id="source-reliability">
+            <h2>Source and Reliability</h2>
+            <textarea placeholder="Enter source and reliability..."></textarea>
+        </section>
+
+        <section id="chief-complaint">
+            <h2>Chief Complaint</h2>
+            <textarea placeholder="Enter chief complaint..."></textarea>
+        </section>
+
+        <section id="history-present-illness">
+            <h2>History of Present Illness</h2>
+            <textarea placeholder="Enter history of present illness..."></textarea>
+        </section>
+
+        <section id="past-psychiatric-history">
+            <h2>Past Psychiatric History</h2>
+            <textarea placeholder="Enter past psychiatric history..."></textarea>
+        </section>
+
+        <section id="past-medical-history">
+            <h2>Past Medical History</h2>
+            <textarea placeholder="Enter past medical history..."></textarea>
+        </section>
+
+        <section id="family-history">
+            <h2>Family History</h2>
+            <textarea placeholder="Enter family history..."></textarea>
+        </section>
+
+        <section id="personal-history">
+            <h2>Personal History</h2>
+            <h3>Prenatal and Perinatal</h3>
+            <textarea placeholder="Enter details..."></textarea>
+            <h3>Early Childhood (to age 3)</h3>
+            <textarea placeholder="Enter details..."></textarea>
+            <h3>Middle Childhood (ages 3-11)</h3>
+            <textarea placeholder="Enter details..."></textarea>
+            <h3>Late Childhood (puberty through adolescence)</h3>
+            <textarea placeholder="Enter details..."></textarea>
+             <h3>Adulthood</h3>
+            <textarea placeholder="Enter details..."></textarea>
+        </section>
+
+        <section id="substance-use-history">
+            <h2>Substance Use History</h2>
+            <textarea placeholder="Enter substance use history..."></textarea>
+        </section>
+
+        <section id="mental-status-examination">
+            <h2>Mental Status Examination</h2>
+            <h3>Appearance</h3>
+            <textarea placeholder="Enter appearance details..."></textarea>
+            <h3>Behavior</h3>
+            <textarea placeholder="Enter behavior details..."></textarea>
+            <h3>Speech</h3>
+            <textarea placeholder="Enter speech details..."></textarea>
+            <h3>Mood</h3>
+            <textarea placeholder="Enter mood details..."></textarea>
+            <h3>Affect</h3>
+            <textarea placeholder="Enter affect details..."></textarea>
+            <h3>Thought Process</h3>
+            <textarea placeholder="Enter thought process details..."></textarea>
+            <h3>Thought Content</h3>
+            <textarea placeholder="Enter thought content details..."></textarea>
+            <h3>Perception</h3>
+            <textarea placeholder="Enter perception details..."></textarea>
+            <h3>Cognition</h3>
+            <textarea placeholder="Enter cognition details..."></textarea>
+            <h3>Insight</h3>
+            <textarea placeholder="Enter insight details..."></textarea>
+            <h3>Judgment</h3>
+            <textarea placeholder="Enter judgment details..."></textarea>
+        </section>
+
+        <div class="button-container">
+            <button id="save-btn">Save</button>
+            <button id="clear-btn">Clear</button>
+            <button id="pdf-btn">Download as PDF</button>
+            <button id="docx-btn">Download as DOCX</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://unpkg.com/html-docx-js/dist/html-docx.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('theme-toggle');
+            const saveBtn = document.getElementById('save-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const pdfBtn = document.getElementById('pdf-btn');
+            const docxBtn = document.getElementById('docx-btn');
+            const textareas = document.querySelectorAll('textarea');
+
+            // Theme toggle
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+            });
+
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+
+            // Save data to local storage
+            saveBtn.addEventListener('click', () => {
+                textareas.forEach((textarea, index) => {
+                    localStorage.setItem('mse_data_' + index, textarea.value);
+                });
+                alert('Data saved successfully!');
+            });
+
+            // Load data from local storage
+            textareas.forEach((textarea, index) => {
+                const savedData = localStorage.getItem('mse_data_' + index);
+                if (savedData) {
+                    textarea.value = savedData;
+                }
+            });
+
+            // Clear data
+            clearBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to clear all fields?')) {
+                    textareas.forEach((textarea, index) => {
+                        textarea.value = '';
+                        localStorage.removeItem('mse_data_' + index);
+                    });
+                }
+            });
+
+            // PDF generation
+            pdfBtn.addEventListener('click', () => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                let reportContent = '';
+                document.querySelectorAll('section').forEach(section => {
+                    const title = section.querySelector('h2, h3').innerText;
+                    const text = section.querySelector('textarea').value;
+                    reportContent += title + '\n';
+                    reportContent += text + '\n\n';
+                });
+
+                doc.text(reportContent, 10, 10);
+                doc.save('mse-report.pdf');
+            });
+
+            // DOCX generation
+            docxBtn.addEventListener('click', () => {
+                let content = '<!DOCTYPE html><html><head><title>MSE Report</title></head><body>';
+                 document.querySelectorAll('section').forEach(section => {
+                    const title = section.querySelector('h2, h3').innerText;
+                    const text = section.querySelector('textarea').value.replace(/\n/g, '<br/>');
+                    content += '<h2>' + title + '</h2>';
+                    content += '<p>' + text + '</p>';
+                });
+                content += '</body></html>';
+                
+                var converted = htmlDocx.asBlob(content);
+                var url = URL.createObjectURL(converted);
+                var link = document.createElement('a');
+                link.href = url;
+                link.download = 'mse-report.docx';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        });
+    </script>
+</body>
+</html>
