@@ -13,17 +13,21 @@ const App = {
     setupTheme: function() {
         const themeToggle = document.getElementById('checkbox');
         if (themeToggle) {
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const savedTheme = localStorage.getItem('darkMode');
+            const shouldBeDark = savedTheme !== null ? savedTheme === 'true' : prefersDark;
+
+            themeToggle.checked = shouldBeDark;
+            document.body.classList.toggle('dark-mode', shouldBeDark);
+
             themeToggle.addEventListener('change', () => {
-                document.body.classList.toggle('dark-mode');
+                document.body.classList.toggle('dark-mode', themeToggle.checked);
                 localStorage.setItem('darkMode', themeToggle.checked);
             });
-            if (localStorage.getItem('darkMode') === 'true') {
-                themeToggle.checked = true;
-                document.body.classList.add('dark-mode');
-            }
         }
     },
-
+    
+    // ... (rest of setup functions are the same)
     setupFormPage: function() {
         document.getElementById('save-btn').addEventListener('click', () => this.saveRecord());
         document.getElementById('clear-btn').addEventListener('click', () => this.clearForm());
@@ -58,13 +62,8 @@ const App = {
 
     toggleNameVisibility: function() {
         const input = document.getElementById('patient-name');
-        if (input.type === 'password') {
-            input.type = 'text';
-            this.textContent = '🙈';
-        } else {
-            input.type = 'password';
-            this.textContent = '👁️';
-        }
+        input.type = input.type === 'text' ? 'password' : 'text';
+        this.textContent = input.type === 'text' ? '🙈' : '👁️';
     },
     
     generatePatientId: function(name, age, sex) {
@@ -88,15 +87,9 @@ const App = {
             return;
         }
         
-        // If we are editing, we keep the original ID.
-        if (existingRecordId) {
-            patientId = existingRecordId;
-        }
+        if (existingRecordId) patientId = existingRecordId;
 
-        const record = {
-            id: patientId,
-            data: {}
-        };
+        const record = { id: patientId, data: {} };
         
         document.querySelectorAll('input, select, textarea').forEach(el => {
             if (el.id) record.data[el.id] = el.type === 'checkbox' ? el.checked : el.value;
@@ -104,21 +97,21 @@ const App = {
         
         record.data['observation-datetime'] = record.data['observation-datetime'] || new Date().toISOString();
 
-
         let records = this.getRecords();
         const existingIndex = records.findIndex(r => r.id === record.id);
 
-        if (existingIndex > -1) {
-            records[existingIndex] = record;
-        } else {
-            records.push(record);
-        }
+        if (existingIndex > -1) records[existingIndex] = record;
+        else records.push(record);
 
         localStorage.setItem('mseRecords', JSON.stringify(records));
-        alert(`Record ${record.id} saved successfully!`);
+        
+        // **NEW: Confirmation message**
+        alert(`Record ${record.id} saved successfully!\n\nIMPORTANT: This data is saved ONLY in your browser. For permanent storage, please download the record from the dashboard.`);
+
         window.location.href = 'dashboard.html';
     },
-
+    
+    // ... (load, get, render, edit, delete, clear functions are the same)
     loadRecordForEditing: function(id) {
         const record = this.getRecords().find(r => r.id === id);
         if (record) {
@@ -171,10 +164,13 @@ const App = {
         const bodyContent = document.getElementById('modal-body-content');
         
         let content = '';
+        // This is a simple view. The PDF/DOCX will be more structured.
         for (const key in record.data) {
-            const labelEl = document.querySelector(`label[for=${key}]`);
-            const label = labelEl ? labelEl.innerText : key;
-            content += `<p><strong>${label}:</strong> ${record.data[key]}</p>`;
+             const labelEl = document.querySelector(`label[for=${key}]`);
+             if (labelEl && record.data[key]) {
+                const label = labelEl.innerText;
+                content += `<p><strong>${label}:</strong> ${record.data[key]}</p>`;
+             }
         }
         bodyContent.innerHTML = content;
         modal.style.display = "block";
@@ -192,51 +188,73 @@ const App = {
     
     clearForm: () => document.querySelector('form').reset(),
 
+
+    // **REWRITTEN REPORT GENERATION**
     generatePdf: function(id) {
         const record = this.getRecords().find(r => r.id === id);
-        if (!record) return;
+        if (!record) { alert('Record not found.'); return; }
 
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
+        // Register the font
+        // Note: jsPDF has built-in support for 'times'.
         doc.setFont('times', 'normal');
-        doc.setFontSize(20);
-        doc.text(`MSE Report: ${record.id}`, 105, 20, { align: 'center' });
 
-        const observationDate = record.data['observation-datetime'] ? new Date(record.data['observation-datetime']).toLocaleString() : 'N/A';
-        doc.setFontSize(12);
-        doc.text(`Date of Observation: ${observationDate}`, 105, 30, { align: 'center' });
+        const header = (pageNumber) => {
+            doc.setFontSize(16);
+            doc.setFont('times', 'bold');
+            doc.text('Mental Status Examination Report', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
+            doc.setFontSize(12);
+            doc.setFont('times', 'normal');
+            doc.text(`Record ID: ${record.id}`, doc.internal.pageSize.getWidth() / 2, 22, { align: 'center' });
+        };
+
+        const footer = (pageNumber, pageCount) => {
+            doc.setFontSize(10);
+            doc.text(`Page ${pageNumber} of ${pageCount}`, doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
+        };
+        
+        const sections = {
+            '1. Administrative & Basic Details': ['patient-name', 'age', 'sex', 'observation-datetime', 'education', 'occupation', 'marital-status', 'informant', 'informant-relation'],
+            '2. Clinical Background': ['chief-complaints'],
+            'Developmental History': ['dev-birth-weight', 'dev-milestones', 'dev-birth-order', 'dev-childhood-disorders'],
+            'Family History': ['family-type', 'family-ses', 'family-relationships'],
+            'Premorbid Personality': ['pm-mood', 'pm-social', 'pm-leisure'],
+            '3. Mental Status Examination (MSE)': [],
+            'A. Appearance & Behavior': ['body-built', 'grooming', 'eye-contact', 'psychomotor-activity'],
+            'B. Speech & Thought': ['speech-rate', 'relevance-coherence', 'risk-assessment'],
+            'C. Perception & Cognition': ['orientation-time', 'orientation-place', 'orientation-person'],
+            'Memory': ['memory-immediate', 'memory-recent', 'memory-remote'],
+            'D. Clinical Summary': ['judgment', 'insight']
+        };
 
         let tableData = [];
-        let currentSection = '';
-
-        document.querySelectorAll('h2, h3').forEach(header => {
-            const sectionName = header.innerText;
-            if (header.tagName === 'H2') currentSection = sectionName;
-            
-            const fieldsContainer = header.nextElementSibling;
-            if (fieldsContainer && fieldsContainer.classList.contains('form-grid') || fieldsContainer.classList.contains('form-group-full')) {
-                fieldsContainer.querySelectorAll('input, select, textarea').forEach(el => {
-                    if (el.id && record.data[el.id]) {
-                        const labelEl = document.querySelector(`label[for=${el.id}]`);
-                        const label = labelEl ? labelEl.innerText : el.id;
-                        tableData.push([sectionName, label, record.data[el.id]]);
-                    }
+        for(const sectionTitle in sections) {
+            tableData.push([{ content: sectionTitle, colSpan: 2, styles: { fontStyle: 'bold', fillColor: '#e9ecef', textColor: '#212529' } }]);
+            const fields = sections[sectionTitle];
+            if (fields.length > 0) {
+                fields.forEach(fieldId => {
+                    const labelEl = document.querySelector(`label[for=${fieldId}]`);
+                    const label = labelEl ? labelEl.innerText : fieldId;
+                    const value = record.data[fieldId] || 'N/A';
+                    tableData.push([label, value]);
                 });
             }
-        });
-        
+        }
+
         doc.autoTable({
-            startY: 40,
-            head: [['Section', 'Field', 'Value']],
+            startY: 30,
             body: tableData,
             theme: 'grid',
-            styles: { font: 'times', cellPadding: 2, fontSize: 10 },
-            headStyles: { fillColor: [0, 95, 115] },
-            didParseCell: function (data) {
-                if (data.column.dataKey === 2) { // Value column
-                    data.cell.styles.halign = 'left'; 
-                }
+            styles: { font: 'times', cellPadding: 2.5 },
+            columnStyles: {
+                0: { fontStyle: 'bold', cellWidth: 60 },
+                1: { cellWidth: 'auto' }
+            },
+            didDrawPage: (data) => {
+                header(data.pageNumber);
+                footer(data.pageNumber, data.pageCount);
             }
         });
 
@@ -245,35 +263,41 @@ const App = {
 
     generateDocx: function(id) {
         const record = this.getRecords().find(r => r.id === id);
-        if (!record) return;
+        if (!record) { alert('Record not found.'); return; }
         
         let content = `
-            <!DOCTYPE html>
-            <html>
-            <head><title>MSE Report</title></head>
-            <body style="font-family: 'Times New Roman', Times, serif;">
-                <h1 style="text-align: center;">MSE Report: ${record.id}</h1>
-                <p style="text-align: center;">Date of Observation: ${new Date(record.data['observation-datetime']).toLocaleString()}</p>
+            <!DOCTYPE html><html><head><title>MSE Report</title></head>
+            <body style="font-family: 'Times New Roman', Times, serif; font-size: 12pt;">
+                <div style="text-align: center;">
+                    <h1>Mental Status Examination Report</h1>
+                    <h2>Record ID: ${record.id}</h2>
+                </div>
         `;
 
-        document.querySelectorAll('h2').forEach(h2 => {
-            content += `<h2>${h2.innerText}</h2>`;
-            let nextEl = h2.nextElementSibling;
-            while(nextEl && nextEl.tagName !== 'H2') {
-                if (nextEl.tagName === 'H3') {
-                     content += `<h3>${nextEl.innerText}</h3>`;
-                } else if (nextEl.classList.contains('form-grid') || nextEl.classList.contains('form-group-full')) {
-                    nextEl.querySelectorAll('input, select, textarea').forEach(el => {
-                        if (el.id && record.data[el.id]) {
-                            const labelEl = document.querySelector(`label[for=${el.id}]`);
-                            const label = labelEl ? labelEl.innerText : el.id;
-                            content += `<p><strong>${label}:</strong><br>${record.data[el.id].replace(/\n/g, '<br>')}</p>`;
-                        }
-                    });
-                }
-                nextEl = nextEl.nextElementSibling;
-            }
-        });
+        const sections = {
+            '<h2>1. Administrative & Basic Details</h2>': ['patient-name', 'age', 'sex', 'observation-datetime', 'education', 'occupation', 'marital-status', 'informant', 'informant-relation'],
+            '<h2>2. Clinical Background</h2>': ['chief-complaints'],
+            '<h3>Developmental History</h3>': ['dev-birth-weight', 'dev-milestones', 'dev-birth-order', 'dev-childhood-disorders'],
+            '<h3>Family History</h3>': ['family-type', 'family-ses', 'family-relationships'],
+            '<h3>Premorbid Personality</h3>': ['pm-mood', 'pm-social', 'pm-leisure'],
+            '<h2>3. Mental Status Examination (MSE)</h2>': [],
+            '<h3>A. Appearance & Behavior</h3>': ['body-built', 'grooming', 'eye-contact', 'psychomotor-activity'],
+            '<h3>B. Speech & Thought</h3>': ['speech-rate', 'relevance-coherence', 'risk-assessment'],
+            '<h3>C. Perception & Cognition</h3>': ['orientation-time', 'orientation-place', 'orientation-person'],
+            '<h3>Memory</h3>': ['memory-immediate', 'memory-recent', 'memory-remote'],
+            '<h3>D. Clinical Summary</h3>': ['judgment', 'insight']
+        };
+
+        for (const sectionTitle in sections) {
+            content += sectionTitle;
+            const fields = sections[sectionTitle];
+            fields.forEach(fieldId => {
+                const labelEl = document.querySelector(`label[for=${fieldId}]`);
+                const label = labelEl ? labelEl.innerText : fieldId;
+                const value = (record.data[fieldId] || 'N/A').replace(/\n/g, '<br/>');
+                content += `<p style="text-align: justify;"><strong>${label}:</strong> ${value}</p>`;
+            });
+        }
         
         content += '</body></html>';
 
