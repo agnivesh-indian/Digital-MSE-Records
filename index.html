@@ -139,7 +139,6 @@
     <div class="container">
         <div class="header-controls">
             <div class="navigation-links">
-                <a href="patients.html" class="btn-dashboard">Patients List</a>
                 <a href="dashboard.html" class="btn-dashboard">MSE Records Dashboard</a>
             </div>
             <div class="theme-switch-wrapper">
@@ -153,7 +152,7 @@
         <h1>Professional Digital Mental Status Examination Record</h1>
 
         <h2>1. Administrative & Basic Details</h2>
-        <div class="form-grid">
+        <div class="form-grid" style="grid-template-columns: repeat(3, 1fr);">
             <div class="form-group name-field"><label for="patient-name">Patient Name</label><input type="text" id="patient-name"><span class="toggle-visibility">👁️</span></div>
             <div class="form-group"><label for="age">Age</label><input type="number" id="age"></div>
             <div class="form-group"><label for="sex">Sex</label><select id="sex"><option>Male</option><option>Female</option><option>Other</option></select></div>
@@ -167,29 +166,33 @@
 
         <h2>2. Clinical Background</h2>
         <div class="form-group form-group-full"><label for="chief-complaints">Chief Complaints & Duration</label><textarea id="chief-complaints"></textarea></div>
+        
         <h3>Developmental History</h3>
-        <div class="form-grid">
+        <div class="form-grid" style="grid-template-columns: repeat(3, 1fr);">
             <div class="form-group"><label for="dev-birth-weight">Birth Weight</label><input type="text" id="dev-birth-weight"></div>
             <div class="form-group"><label for="dev-milestones">Milestones</label><input type="text" id="dev-milestones"></div>
             <div class="form-group"><label for="dev-birth-order">Birth Order</label><input type="text" id="dev-birth-order"></div>
-            <div class="form-group"><label for="dev-childhood-disorders">Childhood Disorders</label><input type="text" id="dev-childhood-disorders"></div>
+            <div class="form-group form-group-full"><label for="dev-childhood-disorders">Childhood Disorders</label><input type="text" id="dev-childhood-disorders"></div>
         </div>
+
         <h3>Family History</h3>
-        <div class="form-grid">
+        <div class="form-grid" style="grid-template-columns: repeat(3, 1fr);">
             <div class="form-group"><label for="family-type">Family Type</label><input type="text" id="family-type"></div>
             <div class="form-group"><label for="family-ses">Socio-Economic Status</label><input type="text" id="family-ses"></div>
             <div class="form-group form-group-full"><label for="family-relationships">Relationships</label><textarea id="family-relationships"></textarea></div>
         </div>
+
         <h3>Premorbid Personality</h3>
-        <div class="form-grid">
+        <div class="form-grid" style="grid-template-columns: repeat(3, 1fr);">
             <div class="form-group"><label for="pm-mood">Predominant Mood</label><input type="text" id="pm-mood"></div>
             <div class="form-group"><label for="pm-social">Social Relations</label><input type="text" id="pm-social"></div>
             <div class="form-group"><label for="pm-leisure">Leisure Time & Hobbies</label><input type="text" id="pm-leisure"></div>
         </div>
         
         <h2>3. Mental Status Examination (MSE)</h2>
+        
         <h3>A. Appearance & Behavior</h3>
-        <div class="form-grid">
+        <div class="form-grid" style="grid-template-columns: repeat(4, 1fr);">
             <div class="form-group"><label for="body-built">Body Built</label><select id="body-built"><option>Ectomorphic</option><option>Mesomorphic</option><option>Endomorphic</option></select></div>
             <div class="form-group"><label for="grooming">Grooming</label><select id="grooming"><option>Well-groomed</option><option>Average</option><option>Poor/Unkempt</option></select></div>
             <div class="form-group"><label for="eye-contact">Eye Contact</label><select id="eye-contact"><option>Maintained</option><option>Fleeting</option><option>Guarded</option><option>Avoidant</option><option>Staring</option></select></div>
@@ -197,30 +200,32 @@
         </div>
 
         <h3>B. Speech & Thought</h3>
-        <div class="form-grid">
+        <div class="form-grid" style="grid-template-columns: repeat(2, 1fr);">
             <div class="form-group"><label for="speech-rate">Speech Rate</label><select id="speech-rate"><option>Normal</option><option>Pressured</option><option>Slow/Delayed</option></select></div>
             <div class="form-group"><label for="relevance-coherence">Relevance & Coherence</label><select id="relevance-coherence"><option>Yes</option><option>No</option></select></div>
-            <div class="form-group form-group-full alert-field"><label for="risk-assessment">⚠️ Risk Assessment (Suicidal or Homicidal Ideations)</label><textarea id="risk-assessment"></textarea></div>
         </div>
-
+        
         <h3>C. Perception & Cognition</h3>
-        <div class="form-grid">
-            <div class="form-group"><label for="orientation-time">Orientation: Time</label><select id="orientation-time"><option>Intact</option><option>Impaired</option></select></div>
-            <div class="form-group"><label for="orientation-place">Orientation: Place</label><select id="orientation-place"><option>Intact</option><option>Impaired</option></select></div>
-            <div class="form-group"><label for="orientation-person">Orientation: Person</label><select id="orientation-person"><option>Intact</option><option>Impaired</option></select></div>
+        <h4>Orientation</h4>
+        <div class="form-grid" style="grid-template-columns: repeat(3, 1fr);">
+            <div class="form-group"><label for="orientation-time">Time</label><select id="orientation-time"><option>Intact</option><option>Impaired</option></select></div>
+            <div class="form-group"><label for="orientation-place">Place</label><select id="orientation-place"><option>Intact</option><option>Impaired</option></select></div>
+            <div class="form-group"><label for="orientation-person">Person</label><select id="orientation-person"><option>Intact</option><option>Impaired</option></select></div>
         </div>
-        <h3>Memory</h3>
-        <div class="form-grid">
+        <h4>Memory</h4>
+        <div class="form-grid" style="grid-template-columns: repeat(3, 1fr);">
             <div class="form-group"><label for="memory-immediate">Immediate</label><select id="memory-immediate"><option>Intact</option><option>Impaired</option></select></div>
             <div class="form-group"><label for="memory-recent">Recent</label><select id="memory-recent"><option>Intact</option><option>Impaired</option></select></div>
             <div class="form-group"><label for="memory-remote">Remote</label><select id="memory-remote"><option>Intact</option><option>Impaired</option></select></div>
         </div>
 
         <h3>D. Clinical Summary</h3>
-        <div class="form-grid">
+        <div class="form-grid" style="grid-template-columns: repeat(2, 1fr);">
             <div class="form-group"><label for="judgment">Judgment</label><select id="judgment"><option>Intact</option><option>Impaired</option></select></div>
             <div class="form-group"><label for="insight">Insight</label><select id="insight"><option>Grade 1 (Total denial)</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6 (True emotional insight)</option></select></div>
         </div>
+        
+        <div class="form-group form-group-full alert-field"><label for="risk-assessment">⚠️ Risk Assessment (Suicidal or Homicidal Ideations)</label><textarea id="risk-assessment"></textarea></div>
 
         <div class="button-group">
             <button id="save-btn" class="btn-primary">Save Record</button>
