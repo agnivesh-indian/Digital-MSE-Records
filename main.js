@@ -106,7 +106,7 @@ const App = {
         localStorage.setItem('mseRecords', JSON.stringify(records));
         
         // **NEW: Confirmation message**
-        alert(`Record ${record.id} saved successfully!\n\nIMPORTANT: This data is saved ONLY in your browser. For permanent storage, please download the record from the dashboard.`);
+        alert(`Record ${record.id} saved successfully!\n\nThis is only saved in this browser and you may lose your data when the browser data is cleared. It is advised to download it as pdf or docs file to your device.`);
 
         window.location.href = 'dashboard.html';
     },
