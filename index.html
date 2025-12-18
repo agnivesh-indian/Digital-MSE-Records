@@ -151,7 +151,6 @@
         </div>
         <h1>Professional Digital Mental Status Examination Record</h1>
 
-        <h2>1. Administrative & Basic Details</h2>
         <div class="form-grid" style="grid-template-columns: repeat(2, 1fr);">
             <div class="form-group name-field"><label for="patient-name">Patient Name</label><input type="text" id="patient-name"><span class="toggle-visibility">👁️</span></div>
             <div class="form-group"><label for="age">Age</label><input type="number" id="age"></div>
@@ -160,68 +159,142 @@
             <div class="form-group"><label for="education">Education</label><select id="education"><option>None</option><option>Primary</option><option>High School</option><option>Some College</option><option>Graduate</option><option>Post-Graduate</option><option>Doctorate</option></select></div>
             <div class="form-group"><label for="occupation">Occupation</label><input type="text" id="occupation"></div>
             <div class="form-group"><label for="marital-status">Marital Status</label><select id="marital-status"><option>Single</option><option>Married</option><option>Divorced</option><option>Widowed</option></select></div>
+            <div class="form-group"><label for="religion">Religion</label><input type="text" id="religion"></div>
             <div class="form-group"><label for="informant">Informant</label><input type="text" id="informant"></div>
             <div class="form-group form-group-full"><label for="informant-relation">Relation to Patient</label><select id="informant-relation"><option>Parent</option><option>Spouse</option><option>Sibling</option><option>Friend</option><option>Self</option><option>Other</option></select></div>
+            <div class="form-group"><label for="examined-by">Examined by</label><input type="text" id="examined-by"></div>
+            <div class="form-group"><label for="place">Place</label><input type="text" id="place"></div>
         </div>
 
         <h2>2. Clinical Background</h2>
         <div class="form-group form-group-full"><label for="chief-complaints">Chief Complaints & Duration</label><textarea id="chief-complaints"></textarea></div>
+        <div class="form-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="form-group"><label for="mode-of-onset">Mode of onset</label><input type="text" id="mode-of-onset"></div>
+            <div class="form-group"><label for="precipitating-factors">Precipitating Factors</label><input type="text" id="precipitating-factors"></div>
+        </div>
+        <div class="form-group form-group-full"><label for="reason-for-consultation">Reason for consultation</label><textarea id="reason-for-consultation"></textarea></div>
+        <div class="form-group form-group-full"><label for="history-of-present-illness">History of Present Illness</label><textarea id="history-of-present-illness"></textarea></div>
         
-        <h3>Developmental History</h3>
+        <h3>History</h3>
+        <h4>A) Early Development and Childhood:</h4>
         <div class="form-grid" style="grid-template-columns: repeat(2, 1fr);">
             <div class="form-group"><label for="dev-birth-weight">Birth Weight</label><input type="text" id="dev-birth-weight"></div>
-            <div class="form-group"><label for="dev-milestones">Milestones</label><input type="text" id="dev-milestones"></div>
+            <div class="form-group"><label for="dev-milestones">Developmental Milestones</label><input type="text" id="dev-milestones"></div>
             <div class="form-group"><label for="dev-birth-order">Birth Order</label><input type="text" id="dev-birth-order"></div>
-            <div class="form-group"><label for="dev-childhood-disorders">Childhood Disorders</label><input type="text" id="dev-childhood-disorders"></div>
+            <div class="form-group"><label for="dev-childhood-disorders">Childhood Disorder</label><input type="text" id="dev-childhood-disorders"></div>
         </div>
+        <h4>B) Educational History:</h4>
+        <div class="form-group form-group-full"><textarea id="educational-history"></textarea></div>
+        <h4>C) Occupational History:</h4>
+        <div class="form-group form-group-full"><textarea id="occupational-history"></textarea></div>
+        <div class="form-grid" style="grid-template-columns: repeat(4, 1fr);">
+            <div class="form-group"><label for="sleep">Sleep</label><input type="text" id="sleep"></div>
+            <div class="form-group"><label for="eating">Eating</label><input type="text" id="eating"></div>
+            <div class="form-group"><label for="bowels">Bowels</label><input type="text" id="bowels"></div>
+            <div class="form-group"><label for="personal-care">Personal care</label><input type="text" id="personal-care"></div>
+        </div>
+        <h4>H) Treatment History:</h4>
+        <div class="form-group form-group-full"><textarea id="treatment-history"></textarea></div>
+        <h4>I) Past History of Mental Illness:</h4>
+        <div class="form-group form-group-full"><textarea id="past-history-of-mental-illness"></textarea></div>
 
         <h3>Family History</h3>
         <div class="form-grid" style="grid-template-columns: repeat(2, 1fr);">
             <div class="form-group"><label for="family-type">Family Type</label><input type="text" id="family-type"></div>
             <div class="form-group"><label for="family-ses">Socio-Economic Status</label><input type="text" id="family-ses"></div>
-            <div class="form-group form-group-full"><label for="family-relationships">Relationships</label><textarea id="family-relationships"></textarea></div>
+            <div class="form-group form-group-full"><label for="family-relationships">Interpersonal Relationship with Family</label><textarea id="family-relationships"></textarea></div>
         </div>
+        <h4>Genogram</h4>
+        <div class="form-group form-group-full"><textarea id="genogram"></textarea></div>
 
         <h3>Premorbid Personality</h3>
         <div class="form-grid" style="grid-template-columns: repeat(3, 1fr);">
             <div class="form-group"><label for="pm-mood">Predominant Mood</label><input type="text" id="pm-mood"></div>
-            <div class="form-group"><label for="pm-social">Social Relations</label><input type="text" id="pm-social"></div>
-            <div class="form-group"><label for="pm-leisure">Leisure Time & Hobbies</label><input type="text" id="pm-leisure"></div>
+            <div class="form-group"><label for="pm-social">Social Relation</label><input type="text" id="pm-social"></div>
+            <div class="form-group"><label for="pm-leisure">Use of Leisure Time</label><input type="text" id="pm-leisure"></div>
         </div>
         
         <h2>3. Mental Status Examination (MSE)</h2>
         
         <h3>A. Appearance & Behavior</h3>
         <div class="form-grid" style="grid-template-columns: repeat(4, 1fr);">
+            <div class="form-group"><label for="general-appearance">General Appearance</label><input type="text" id="general-appearance"></div>
             <div class="form-group"><label for="body-built">Body Built</label><select id="body-built"><option>Ectomorphic</option><option>Mesomorphic</option><option>Endomorphic</option></select></div>
-            <div class="form-group"><label for="grooming">Grooming</label><select id="grooming"><option>Well-groomed</option><option>Average</option><option>Poor/Unkempt</option></select></div>
-            <div class="form-group"><label for="eye-contact">Eye Contact</label><select id="eye-contact"><option>Maintained</option><option>Fleeting</option><option>Guarded</option><option>Avoidant</option><option>Staring</option></select></div>
+            <div class="form-group"><label for="dressing">Dressing</label><input type="text" id="dressing"></div>
+            <div class="form-group"><label for="grooming">Hygiene and Grooming</label><select id="grooming"><option>Well-groomed</option><option>Average</option><option>Poor/Unkempt</option></select></div>
+            <div class="form-group"><label for="rapport">Rapport</label><input type="text" id="rapport"></div>
+            <div class="form-group"><label for="eye-contact">Eye Contact with the Examiner</label><select id="eye-contact"><option>Maintained</option><option>Fleeting</option><option>Guarded</option><option>Avoidant</option><option>Staring</option></select></div>
+            <div class="form-group"><label for="attitude-toward-examiner">Attitude toward Examiner</label><input type="text" id="attitude-toward-examiner"></div>
+            <div class="form-group"><label for="facial-expressions">Facial Expressions</label><input type="text" id="facial-expressions"></div>
+            <div class="form-group"><label for="level-of-distress">Level of distress</label><input type="text" id="level-of-distress"></div>
+            <div class="form-group"><label for="abnormal-movements-or-postures">Abnormal Movements or Postures</label><input type="text" id="abnormal-movements-or-postures"></div>
             <div class="form-group"><label for="psychomotor-activity">Psychomotor Activity</label><select id="psychomotor-activity"><option>Normal</option><option>Retarded</option><option>Agitated</option></select></div>
         </div>
 
         <h3>B. Speech & Thought</h3>
+        <h4>Speech</h4>
+        <div class="form-grid" style="grid-template-columns: repeat(4, 1fr);">
+            <div class="form-group"><label for="speech-rate">Voice and Speech Rate</label><select id="speech-rate"><option>Normal</option><option>Pressured</option><option>Slow/Delayed</option></select></div>
+            <div class="form-group"><label for="reaction-time">Reaction Time</label><input type="text" id="reaction-time"></div>
+            <div class="form-group"><label for="articulation-and-fluency">Articulation and Fluency</label><input type="text" id="articulation-and-fluency"></div>
+            <div class="form-group"><label for="relevance">Relevance</label><select id="relevance"><option>Yes</option><option>No</option></select></div>
+            <div class="form-group"><label for="coherence">Coherence</label><select id="coherence"><option>Yes</option><option>No</option></select></div>
+            <div class="form-group"><label for="speech-latency">Speech Latency</label><input type="text" id="speech-latency"></div>
+            <div class="form-group"><label for="prosody-of-speech">Prosody of Speech</label><input type="text" id="prosody-of-speech"></div>
+            <div class="form-group"><label for="tone">Tone</label><input type="text" id="tone"></div>
+            <div class="form-group"><label for="tempo">Tempo</label><input type="text" id="tempo"></div>
+            <div class="form-group"><label for="volume">Volume</label><input type="text" id="volume"></div>
+            <div class="form-group"><label for="quantity">Quantity</label><input type="text" id="quantity"></div>
+        </div>
+        <h4>Mood</h4>
+        <div class="form-group form-group-full"><textarea id="mood"></textarea></div>
+        <h4>Affect</h4>
+        <div class="form-grid" style="grid-template-columns: repeat(3, 1fr);">
+            <div class="form-group"><label for="quality">Quality</label><input type="text" id="quality"></div>
+            <div class="form-group"><label for="congruency">Congruency</label><input type="text" id="congruency"></div>
+            <div class="form-group"><label for="range">Range</label><input type="text" id="range"></div>
+            <div class="form-group"><label for="mobility">Mobility</label><input type="text" id="mobility"></div>
+            <div class="form-group"><label for="appropriateness-to-situation">Appropriateness to situation</label><input type="text" id="appropriateness-to-situation"></div>
+        </div>
+        <h4>Thought</h4>
+        <div class="form-group form-group-full"><label for="thought-process">Thought Process</label><textarea id="thought-process"></textarea></div>
+        <h5>Content</h5>
         <div class="form-grid" style="grid-template-columns: repeat(2, 1fr);">
-            <div class="form-group"><label for="speech-rate">Speech Rate</label><select id="speech-rate"><option>Normal</option><option>Pressured</option><option>Slow/Delayed</option></select></div>
-            <div class="form-group"><label for="relevance-coherence">Relevance & Coherence</label><select id="relevance-coherence"><option>Yes</option><option>No</option></select></div>
+            <div class="form-group"><label for="delusions">Delusions</label><input type="text" id="delusions"></div>
+            <div class="form-group"><label for="depressive-ideations">Depressive Ideations</label><input type="text" id="depressive-ideations"></div>
+            <div class="form-group"><label for="obsessions-and-compulsions">Obsessions and Compulsions</label><input type="text" id="obsessions-and-compulsions"></div>
+            <div class="form-group"><label for="phobias">Phobias</label><input type="text" id="phobias"></div>
         </div>
         
         <h3>C. Perception & Cognition</h3>
-        <h4>Orientation</h4>
+        <div class="form-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="form-group"><label for="hallucination">Hallucination</label><input type="text" id="hallucination"></div>
+            <div class="form-group"><label for="illusion">Illusion</label><input type="text" id="illusion"></div>
+            <div class="form-group"><label for="dissociation">Dissociation</label><input type="text" id="dissociation"></div>
+            <div class="form-group"><label for="agnosia">Agnosia</label><input type="text" id="agnosia"></div>
+        </div>
+        <h4>Sensorium and Cognition</h4>
         <div class="form-grid" style="grid-template-columns: repeat(3, 1fr);">
-            <div class="form-group"><label for="orientation-time">Time</label><select id="orientation-time"><option>Intact</option><option>Impaired</option></select></div>
-            <div class="form-group"><label for="orientation-place">Place</label><select id="orientation-place"><option>Intact</option><option>Impaired</option></select></div>
-            <div class="form-group"><label for="orientation-person">Person</label><select id="orientation-person"><option>Intact</option><option>Impaired</option></select></div>
+            <div class="form-group"><label for="orientation-time">Orientation</label><select id="orientation-time"><option>Intact</option><option>Impaired</option></select></div>
+            <div class="form-group"><label for="level-of-consciousness">Level of Consciousness</label><input type="text" id="level-of-consciousness"></div>
+            <div class="form-group"><label for="attention">Attention</label><input type="text" id="attention"></div>
+            <div class="form-group"><label for="concentration">Concentration</label><input type="text" id="concentration"></div>
         </div>
         <h4>Memory</h4>
         <div class="form-grid" style="grid-template-columns: repeat(3, 1fr);">
-            <div class="form-group"><label for="memory-immediate">Immediate</label><select id="memory-immediate"><option>Intact</option><option>Impaired</option></select></div>
-            <div class="form-group"><label for="memory-recent">Recent</label><select id="memory-recent"><option>Intact</option><option>Impaired</option></select></div>
-            <div class="form-group"><label for="memory-remote">Remote</label><select id="memory-remote"><option>Intact</option><option>Impaired</option></select></div>
+            <div class="form-group"><label for="memory-immediate">Immediate Memory</label><select id="memory-immediate"><option>Intact</option><option>Impaired</option></select></div>
+            <div class="form-group"><label for="memory-recent">Recent Memory</label><select id="memory-recent"><option>Intact</option><option>Impaired</option></select></div>
+            <div class="form-group"><label for="memory-remote">Remote Memory</label><select id="memory-remote"><option>Intact</option><option>Impaired</option></select></div>
+            <div class="form-group form-group-full"><label for="general-knowledge">General Knowledge</label><input type="text" id="general-knowledge"></div>
         </div>
+        <div class="form-group form-group-full"><label for="comprehension">Comprehension</label><input type="text" id="comprehension"></div>
+        <div class="form-group form-group-full"><label for="arithematic-ability">Arithematic Ability</label><input type="text" id="arithematic-ability"></div>
+        <div class="form-group form-group-full"><label for="abstract-ability">Abstract Ability</label><input type="text" id="abstract-ability"></div>
 
         <h3>D. Clinical Summary</h3>
         <div class="form-grid" style="grid-template-columns: repeat(2, 1fr);">
-            <div class="form-group"><label for="judgment">Judgment</label><select id="judgment"><option>Intact</option><option>Impaired</option></select></div>
+            <div class="form-group"><label for="personal-judgement">Personal Judgement</label><input type="text" id="personal-judgement"></div>
+            <div class="form-group"><label for="social-judgement">Social Judgement</label><input type="text" id="social-judgement"></div>
             <div class="form-group"><label for="insight">Insight</label><select id="insight"><option>Grade 1 (Total denial)</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6 (True emotional insight)</option></select></div>
         </div>
         
