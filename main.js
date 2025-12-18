@@ -92,7 +92,7 @@ const App = {
 
         localStorage.setItem('mseRecords', JSON.stringify(records));
         
-        alert(`MSE Record ${record.mseId} saved successfully!\n\nThis is only saved in this browser and you may lose your data when the browser data is cleared. It is advised to download it as pdf or docs file to your device.`);
+        alert(`MSE Record ${record.mseId} saved successfully!\n\nThis record is saved locally in your browser. For permanent storage, it is strongly advised to download it as a PDF or DOCX file to your device, as clearing browser data will result in data loss.`);
 
         window.location.href = 'dashboard.html';
     },
