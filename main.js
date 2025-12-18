@@ -223,7 +223,9 @@ const App = {
         if (confirm(`Are you sure you want to delete MSE record ${mseId}?`)) {
             let records = this.getMseRecords().filter(r => r.mseId !== mseId); // Using new function name
             localStorage.setItem('mseRecords', JSON.stringify(records));
-            this.renderDashboard();
+            if (document.querySelector('#records-table')) {
+                this.renderDashboard();
+            }
         }
     },
     
@@ -399,7 +401,9 @@ const App = {
             let mseRecords = this.getMseRecords().filter(r => r.patientId !== id);
             localStorage.setItem('mseRecords', JSON.stringify(mseRecords));
 
-            this.renderPatientsDashboard();
+            if (document.querySelector('#patients-table')) {
+                this.renderPatientsDashboard();
+            }
         }
     },
     
@@ -416,29 +420,6 @@ const App = {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
-        doc.setFont('times', 'normal');
-        doc.setFontSize(16);
-        doc.setFont('times', 'bold');
-        doc.text('Mental Status Examination Report', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
-        doc.setFontSize(12);
-        doc.setFont('times', 'normal');
-        doc.text(`Record ID: ${record.mseId}`, doc.internal.pageSize.getWidth() / 2, 22, { align: 'center' }); // Changed to mseId
-        
-        const observationDate = record.data['observation-datetime'] ? new Date(record.data['observation-datetime']).toLocaleString() : 'N/A';
-        doc.text(`Date of Observation: ${observationDate}`, doc.internal.pageSize.getWidth() / 2, 29, { align: 'center' });
-
-        const header = (pageNumber) => {
-            doc.setFontSize(10);
-            doc.setFont('times', 'normal');
-            doc.text(`Record ID: ${record.mseId}`, 10, 10); // Changed to mseId
-            doc.text(`Page ${pageNumber}`, doc.internal.pageSize.getWidth() - 20, 10, { align: 'right' });
-        };
-
-        const footer = (pageNumber, pageCount) => {
-            doc.setFontSize(10);
-            doc.text(`Page ${pageNumber} of ${pageCount}`, doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
-        };
-        
         // --- Data Extraction and Table Generation ---
         const mapHtmlIdToLabel = (htmlId) => {
             const el = document.getElementById(htmlId);
@@ -466,12 +447,12 @@ const App = {
             ];
 
             formStructure.forEach(section => {
-                body.push([{ content: section.title, colSpan: 2, styles: { fontStyle: 'bold', fillColor: '#e9ecef', textColor: '#212529', halign: 'center' } }]);
+                body.push([{ content: section.title, colSpan: 1, styles: { fontStyle: 'bold', fillColor: '#e9ecef', textColor: '#212529', halign: 'center' } }]);
                 section.fields.forEach(fieldId => {
                     if (record.data[fieldId]) { // Only add if data exists
                         let label = mapHtmlIdToLabel(fieldId);
                         let value = record.data[fieldId];
-                        body.push([label, value]);
+                        body.push([`${label}: ${value}`]);
                     }
                 });
             });
@@ -479,28 +460,12 @@ const App = {
         };
 
         doc.autoTable({
-            startY: 40,
-            head: [['Field', 'Value']],
+            startY: 15,
+            head: [['Description']],
             body: generateTableBody(),
             theme: 'grid',
             styles: { font: 'times', cellPadding: 2.5, fontSize: 10, overflow: 'linebreak' },
             headStyles: { fillColor: [0, 95, 115], textColor: '#ffffff' },
-            didDrawPage: (data) => {
-                doc.setFont('times', 'normal'); // Reset font after autoTable's font setting
-                doc.setFontSize(16);
-                doc.setFont('times', 'bold');
-                doc.text('Mental Status Examination Report', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
-                doc.setFontSize(12);
-                doc.setFont('times', 'normal');
-                doc.text(`Record ID: ${record.mseId}`, doc.internal.pageSize.getWidth() / 2, 22, { align: 'center' });
-                
-                const observationDate = record.data['observation-datetime'] ? new Date(record.data['observation-datetime']).toLocaleString() : 'N/A';
-                doc.text(`Date of Observation: ${observationDate}`, doc.internal.pageSize.getWidth() / 2, 29, { align: 'center' });
-
-                doc.setFontSize(10);
-                doc.text(`Page ${data.pageNumber} of ${data.pageCount}`, doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
-            },
-            margin: { top: 35 } // Adjust top margin to leave space for header
         });
 
         doc.save(`${record.mseId}-Report.pdf`);
@@ -523,10 +488,6 @@ const App = {
         let content = `
             <!DOCTYPE html><html><head><title>MSE Report</title></head>
             <body style="font-family: 'Times New Roman', Times, serif; font-size: 12pt;">
-                <h1 style="text-align: center;">Mental Status Examination Report</h1>
-                <h2 style="text-align: center;">Record ID: ${record.mseId}</h2>
-                <p style="text-align: center;">Date of Observation: ${record.data['observation-datetime'] ? new Date(record.data['observation-datetime']).toLocaleString() : 'N/A'}</p>
-                <br>
         `;
 
         const formStructure = [
@@ -564,7 +525,8 @@ const App = {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-    }
+    },
+
 };
 
 document.addEventListener('DOMContentLoaded', () => App.init());
