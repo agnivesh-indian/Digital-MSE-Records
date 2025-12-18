@@ -34,6 +34,12 @@ const App = {
         document.querySelector('.toggle-visibility').addEventListener('click', (event) => this.toggleNameVisibility(event)); // Pass event
         document.getElementById('observation-datetime').value = new Date().toISOString().slice(0, 16); // Set current date/time
         
+        const downloadBtn = document.querySelector('.download-btn');
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', function() {
+                this.nextElementSibling.classList.toggle('show-download');
+            });
+        }
 
         const urlParams = new URLSearchParams(window.location.search);
         const recordId = urlParams.get('id');
