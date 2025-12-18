@@ -91,6 +91,18 @@ const App = {
         else records.push(record);
 
         localStorage.setItem('mseRecords', JSON.stringify(records));
+
+        // Auto-add patient if not already in the list
+        let patients = this.getPatients();
+        let patient = patients.find(p => p.name.toLowerCase() === name.toLowerCase());
+        if (!patient) {
+            const patientId = this.generatePatientUniqueId();
+            patient = { id: patientId, name: name, age: age, sex: sex, dob: '', contact: '' };
+            patients.push(patient);
+            localStorage.setItem('patients', JSON.stringify(patients));
+        }
+        record.patientId = patient.id; // Associate MSE record with patient
+        localStorage.setItem('mseRecords', JSON.stringify(records));
         
         alert(`MSE Record ${record.mseId} saved successfully!\n\nThis record is saved locally in your browser. For permanent storage, it is strongly advised to download it as a PDF or DOCX file to your device, as clearing browser data will result in data loss.`);
 
@@ -227,6 +239,66 @@ const App = {
         };
         document.getElementById('modal-save-patient-btn').addEventListener('click', () => this.savePatient());
         document.querySelector('.new-btn').addEventListener('click', () => this.createPatient()); // Listen for new patient button
+
+        const notesModal = document.getElementById('notes-modal');
+        const notesCloseBtn = notesModal.querySelector('.close-btn');
+        notesCloseBtn.onclick = () => notesModal.style.display = "none";
+        window.onclick = (event) => {
+            if (event.target == notesModal) {
+                notesModal.style.display = "none";
+            }
+        };
+        document.getElementById('modal-save-note-btn').addEventListener('click', () => this.saveSessionNote());
+    },
+
+    viewPatientNotes: function(patientId) {
+        const patient = this.getPatients().find(p => p.id === patientId);
+        if (!patient) return;
+
+        const modal = document.getElementById('notes-modal');
+        modal.dataset.patientId = patientId;
+        document.getElementById('notes-modal-title').textContent = `Session Notes for ${patient.name}`;
+
+        const notesList = document.getElementById('notes-list');
+        notesList.innerHTML = '';
+        if (patient.notes && patient.notes.length > 0) {
+            patient.notes.forEach(note => {
+                const noteEl = document.createElement('div');
+                noteEl.classList.add('note-item');
+                noteEl.innerHTML = `<strong>${note.date}:</strong><p>${note.text}</p>`;
+                notesList.appendChild(noteEl);
+            });
+        } else {
+            notesList.innerHTML = '<p>No notes for this patient yet.</p>';
+        }
+
+        document.getElementById('note-date').value = new Date().toISOString().slice(0, 10);
+        document.getElementById('note-text').value = '';
+
+        modal.style.display = 'block';
+    },
+
+    saveSessionNote: function() {
+        const modal = document.getElementById('notes-modal');
+        const patientId = modal.dataset.patientId;
+        const date = document.getElementById('note-date').value;
+        const text = document.getElementById('note-text').value;
+
+        if (!date || !text) {
+            alert('Date and note text are required.');
+            return;
+        }
+
+        let patients = this.getPatients();
+        const patientIndex = patients.findIndex(p => p.id === patientId);
+        if (patientIndex > -1) {
+            if (!patients[patientIndex].notes) {
+                patients[patientIndex].notes = [];
+            }
+            patients[patientIndex].notes.push({ date, text });
+            localStorage.setItem('patients', JSON.stringify(patients));
+            modal.style.display = 'none';
+        }
     },
 
     renderPatientsDashboard: function() {
@@ -241,6 +313,7 @@ const App = {
                 <td class="actions-cell">
                     <button class="view-btn" onclick="App.viewPatientMSEs('${patient.id}')">View MSEs</button>
                     <button class="edit-btn" onclick="App.editPatient('${patient.id}')">Edit</button>
+                    <button class="notes-btn" onclick="App.viewPatientNotes('${patient.id}')">Notes</button>
                     <button class="delete-btn" onclick="App.deletePatient('${patient.id}')">Delete</button>
                 </td>
             `;
@@ -323,7 +396,7 @@ const App = {
             localStorage.setItem('patients', JSON.stringify(patients));
             
             // Also delete associated MSE records
-            let mseRecords = this.getMseRecords().filter(r => r.patientId !== id); // Assuming MSE records will have a patientId
+            let mseRecords = this.getMseRecords().filter(r => r.patientId !== id);
             localStorage.setItem('mseRecords', JSON.stringify(mseRecords));
 
             this.renderPatientsDashboard();
