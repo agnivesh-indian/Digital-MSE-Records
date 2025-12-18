@@ -218,8 +218,39 @@ const App = {
     },
     
     // Report Generation (Existing, with minor updates to use new IDs)
-    generatePdf: function(mseId) { // Updated to use mseId
-        const record = this.getMseRecords().find(r => r.mseId === mseId); // Using new function name
+    generatePdfFromForm: function() {
+        const record = { data: {} };
+        document.querySelectorAll('input, select, textarea').forEach(el => {
+            if (el.id) {
+                if (el.id !== 'patient-name') {
+                    record.data[el.id] = el.type === 'checkbox' ? el.checked : el.value;
+                }
+            }
+        });
+        const name = document.getElementById('patient-name').value;
+        const age = document.getElementById('age').value;
+        const sex = document.getElementById('sex').value;
+        record.mseId = this.generateMseId(name, age, sex);
+        this.generatePdf(record);
+    },
+
+    generateDocxFromForm: function() {
+        const record = { data: {} };
+        document.querySelectorAll('input, select, textarea').forEach(el => {
+            if (el.id) {
+                if (el.id !== 'patient-name') {
+                    record.data[el.id] = el.type === 'checkbox' ? el.checked : el.value;
+                }
+            }
+        });
+        const name = document.getElementById('patient-name').value;
+        const age = document.getElementById('age').value;
+        const sex = document.getElementById('sex').value;
+        record.mseId = this.generateMseId(name, age, sex);
+        this.generateDocx(record);
+    },
+
+    generatePdf: function(record) { // Updated to use mseId
         if (!record) { alert('MSE Record not found.'); return; }
 
         const { jsPDF } = window.jspdf;
@@ -230,7 +261,7 @@ const App = {
             const el = document.getElementById(htmlId);
             if (el) {
                 const label = document.querySelector(`label[for=${htmlId}]`);
-                return label ? label.innerText : el.placeholder || htmlId;
+                return label ? label.innerText.replace(':', '') : el.placeholder || htmlId;
             }
             return htmlId; // Fallback
         };
@@ -238,7 +269,7 @@ const App = {
         const generateTableBody = () => {
             let body = [];
             const formStructure = [
-                { title: 'PSYCHIATRIC HISTORY AND MENTAL STATUS EXAMINATION', fields: ['examined-by', 'date', 'patient-name', 'age', 'sex', 'place', 'education', 'occupation', 'religion', 'marital-status', 'informant', 'informant-relation'] },
+                { title: 'PSYCHIATRIC HISTORY AND MENTAL STATUS EXAMINATION', fields: ['examined-by', 'date', 'age', 'sex', 'place', 'education', 'occupation', 'religion', 'marital-status', 'informant', 'informant-relation'] },
                 { title: '2. Clinical Background', fields: ['chief-complaints', 'mode-of-onset', 'precipitating-factors', 'reason-for-consultation', 'history-of-present-illness'] },
                 { title: 'History', fields: [] },
                 { title: 'A) Early Development and Childhood', fields: ['dev-birth-weight', 'dev-milestones', 'dev-birth-order', 'dev-childhood-disorders'] },
@@ -270,21 +301,28 @@ const App = {
             ];
 
             formStructure.forEach(section => {
-                body.push([{ content: section.title, colSpan: 1, styles: { fontStyle: 'bold', fillColor: '#e9ecef', textColor: '#212529', halign: 'center' } }]);
+                let hasContent = false;
+                let sectionBody = [];
                 section.fields.forEach(fieldId => {
                     if (record.data[fieldId]) { // Only add if data exists
+                        hasContent = true;
                         let label = mapHtmlIdToLabel(fieldId);
                         let value = record.data[fieldId];
-                        body.push([`${label}: ${value}`]);
+                        sectionBody.push([label, value]);
                     }
                 });
+
+                if(hasContent){
+                    body.push([{ content: section.title, colSpan: 2, styles: { fontStyle: 'bold', fillColor: '#e9ecef', textColor: '#212529', halign: 'center' } }]);
+                    body.push(...sectionBody);
+                }
             });
             return body;
         };
 
         doc.autoTable({
             startY: 15,
-            head: [['Description']],
+            head: [['Field', 'Value']],
             body: generateTableBody(),
             theme: 'grid',
             styles: { font: 'times', cellPadding: 2.5, fontSize: 10, overflow: 'linebreak' },
@@ -293,7 +331,7 @@ const App = {
                 // Header
                 doc.setFontSize(20);
                 doc.setFont('helvetica', 'bold');
-                doc.text('Mental Status Examination Report', doc.internal.pageSize.getWidth() / 2, 10, { align: 'center' });
+                doc.text(record.mseId || 'Mental Status Examination Report', doc.internal.pageSize.getWidth() / 2, 10, { align: 'center' });
 
                 // Footer
                 doc.setFontSize(10);
@@ -302,11 +340,10 @@ const App = {
             }
         });
 
-        doc.save(`${record.mseId}-Report.pdf`);
+        doc.save(`${record.mseId || 'MSE'}-Report.pdf`);
     },
 
-    generateDocx: function(mseId) { // Updated to use mseId
-        const record = this.getMseRecords().find(r => r.mseId === mseId); // Using new function name
+    generateDocx: function(record) { // Updated to use mseId
         if (!record) { alert('MSE Record not found.'); return; }
         
         // --- Data Extraction and HTML Generation ---
@@ -314,7 +351,7 @@ const App = {
             const el = document.getElementById(htmlId); // This might not work correctly if element is not in current DOM
             if (el) {
                 const label = document.querySelector(`label[for=${htmlId}]`);
-                return label ? label.innerText : el.placeholder || htmlId;
+                return label ? label.innerText.replace(':', '') : el.placeholder || htmlId;
             }
             return htmlId; // Fallback
         };
@@ -322,11 +359,11 @@ const App = {
         let content = `
             <!DOCTYPE html><html><head><title>MSE Report</title></head>
             <body style="font-family: 'Times New Roman', Times, serif; font-size: 12pt;">
-                <h1 style="text-align: center;">Mental Status Examination Report</h1>
+                <h1 style="text-align: center;">${record.mseId || 'Mental Status Examination Report'}</h1>
         `;
 
         const formStructure = [
-            { title: 'PSYCHIATRIC HISTORY AND MENTAL STATUS EXAMINATION', fields: ['examined-by', 'date', 'patient-name', 'age', 'sex', 'place', 'education', 'occupation', 'religion', 'marital-status', 'informant', 'informant-relation'] },
+            { title: 'PSYCHIATRIC HISTORY AND MENTAL STATUS EXAMINATION', fields: ['examined-by', 'date', 'age', 'sex', 'place', 'education', 'occupation', 'religion', 'marital-status', 'informant', 'informant-relation'] },
             { title: '2. Clinical Background', fields: ['chief-complaints', 'mode-of-onset', 'precipitating-factors', 'reason-for-consultation', 'history-of-present-illness'] },
             { title: 'History', fields: [] },
             { title: 'A) Early Development and Childhood', fields: ['dev-birth-weight', 'dev-milestones', 'dev-birth-order', 'dev-childhood-disorders'] },
@@ -358,14 +395,20 @@ const App = {
         ];
 
         formStructure.forEach(section => {
-            content += `<h3 style="text-align: left; margin-top: 20px;">${section.title}</h3>`;
+            let hasContent = false;
+            let sectionContent = ``;
             section.fields.forEach(fieldId => {
                 if (record.data[fieldId]) { // Only add if data exists
+                    hasContent = true;
                     let label = mapHtmlIdToLabel(fieldId);
                     let value = record.data[fieldId];
-                    content += `<p style="text-align: justify; margin-left: 20px;"><strong>${label}:</strong> ${value.replace(/\n/g, '<br/>')}</p>`;
+                    sectionContent += `<tr><td style="padding: 5px; border: 1px solid #ddd;"><strong>${label}</strong></td><td style="padding: 5px; border: 1px solid #ddd;">${value.replace(/\n/g, '<br/>')}</td></tr>`;
                 }
             });
+
+            if(hasContent){
+                content += `<h3 style="text-align: left; margin-top: 20px;">${section.title}</h3><table style="width: 100%; border-collapse: collapse;"><tbody>${sectionContent}</tbody></table>`;
+            }
         });
         
         content += '<p style="text-align: center; margin-top: 40px;">This report is created using the Digital MSE Record by Agnivesh_Indian.</p></body></html>';
@@ -374,7 +417,7 @@ const App = {
         var url = URL.createObjectURL(converted);
         var link = document.createElement('a');
         link.href = url;
-        link.download = `${record.mseId}-Report.docx`; // Changed to mseId
+        link.download = `${record.mseId || 'MSE'}-Report.docx`; // Changed to mseId
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
