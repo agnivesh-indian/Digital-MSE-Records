@@ -204,12 +204,10 @@ const App = {
     editRecord: mseId => window.location.href = `index.html?id=${mseId}`, // Changed id to mseId
 
     deleteRecord: function(mseId) { // Changed id to mseId
-        if (confirm(`Are you sure you want to delete MSE record ${mseId}?`)) {
-            let records = this.getMseRecords().filter(r => r.mseId !== mseId); // Using new function name
-            localStorage.setItem('mseRecords', JSON.stringify(records));
-            if (document.querySelector('#records-table')) {
-                this.renderDashboard();
-            }
+        let records = this.getMseRecords().filter(r => r.mseId !== mseId); // Using new function name
+        localStorage.setItem('mseRecords', JSON.stringify(records));
+        if (document.querySelector('#records-table')) {
+            this.renderDashboard();
         }
     },
     
@@ -234,17 +232,35 @@ const App = {
         const generateTableBody = () => {
             let body = [];
             const formStructure = [
-                { title: '1. Administrative & Basic Details', fields: ['patient-name', 'age', 'sex', 'observation-datetime', 'education', 'occupation', 'marital-status', 'informant', 'informant-relation'] },
-                { title: '2. Clinical Background', fields: ['chief-complaints'] },
-                { title: 'Developmental History', fields: ['dev-birth-weight', 'dev-milestones', 'dev-birth-order', 'dev-childhood-disorders'] },
-                { title: 'Family History', fields: ['family-type', 'family-ses', 'family-relationships'] },
+                { title: 'PSYCHIATRIC HISTORY AND MENTAL STATUS EXAMINATION', fields: ['examined-by', 'date', 'patient-name', 'age', 'sex', 'place', 'education', 'occupation', 'religion', 'marital-status', 'informant', 'informant-relation'] },
+                { title: '2. Clinical Background', fields: ['chief-complaints', 'mode-of-onset', 'precipitating-factors', 'reason-for-consultation', 'history-of-present-illness'] },
+                { title: 'History', fields: [] },
+                { title: 'A) Early Development and Childhood', fields: ['dev-birth-weight', 'dev-milestones', 'dev-birth-order', 'dev-childhood-disorders'] },
+                { title: 'B) Educational History', fields: ['educational-history'] },
+                { title: 'C) Occupational History', fields: ['occupational-history'] },
+                { title: 'D) Sleep', fields: ['sleep'] },
+                { title: 'E) Eating', fields: ['eating'] },
+                { title: 'F) Bowels', fields: ['bowels'] },
+                { title: 'G) Personal care', fields: ['personal-care'] },
+                { title: 'H) Treatment History', fields: ['treatment-history'] },
+                { title: 'I) Past History of Mental Illness', fields: ['past-history-of-mental-illness'] },
+                { title: 'J) Family History', fields: ['family-type', 'family-ses', 'family-relationships'] },
+                { title: 'Genogram', fields: ['genogram'] },
                 { title: 'Premorbid Personality', fields: ['pm-mood', 'pm-social', 'pm-leisure'] },
-                { title: '3. Mental Status Examination (MSE)', fields: [] }, // Placeholder
-                { title: 'A. Appearance & Behavior', fields: ['body-built', 'grooming', 'eye-contact', 'psychomotor-activity'] },
-                { title: 'B. Speech & Thought', fields: ['speech-rate', 'relevance-coherence', 'risk-assessment'] },
-                { title: 'C. Perception & Cognition', fields: ['orientation-time', 'orientation-place', 'orientation-person'] },
-                { title: 'Memory', fields: ['memory-immediate', 'memory-recent', 'memory-remote'] },
-                { title: 'D. Clinical Summary', fields: ['judgment', 'insight'] }
+                { title: 'MENTAL STATUS EXAMINATION', fields: [] },
+                { title: 'General Appearance', fields: ['general-appearance', 'body-built', 'dressing', 'grooming', 'rapport', 'psychomotor-activity', 'eye-contact', 'attitude-toward-examiner', 'facial-expressions', 'level-of-distress', 'abnormal-movements-or-postures'] },
+                { title: 'Speech', fields: ['speech-rate', 'reaction-time', 'articulation-and-fluency', 'relevance', 'coherence', 'speech-latency', 'prosody-of-speech', 'tone', 'tempo', 'volume', 'quantity'] },
+                { title: 'Mood', fields: ['mood'] },
+                { title: 'Affect', fields: ['quality', 'congruency', 'range', 'mobility', 'appropriateness-to-situation'] },
+                { title: 'Thought', fields: ['thought-process', 'delusions', 'depressive-ideations', 'risk-assessment', 'obsessions-and-compulsions', 'phobias'] },
+                { title: 'Perception', fields: ['hallucination', 'illusion', 'dissociation', 'agnosia'] },
+                { title: 'Sensorium and Cognition', fields: ['orientation', 'level-of-consciousness', 'attention', 'concentration'] },
+                { title: 'Memory', fields: ['memory-immediate', 'memory-recent', 'memory-remote', 'general-knowledge'] },
+                { title: 'Comprehension', fields: ['comprehension'] },
+                { title: 'Arithematic Ability', fields: ['arithematic-ability'] },
+                { title: 'Abstract Ability', fields: ['abstract-ability'] },
+                { title: 'Judgement', fields: ['personal-judgement', 'social-judgement'] },
+                { title: 'Insight', fields: ['insight'] }
             ];
 
             formStructure.forEach(section => {
@@ -267,6 +283,17 @@ const App = {
             theme: 'grid',
             styles: { font: 'times', cellPadding: 2.5, fontSize: 10, overflow: 'linebreak' },
             headStyles: { fillColor: [0, 95, 115], textColor: '#ffffff' },
+            addPageContent: function(data) {
+                // Header
+                doc.setFontSize(20);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Mental Status Examination Report', doc.internal.pageSize.getWidth() / 2, 10, { align: 'center' });
+
+                // Footer
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.text('This report is created using the Digital MSE Record by Agnivesh_Indian.', doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
+            }
         });
 
         doc.save(`${record.mseId}-Report.pdf`);
@@ -289,20 +316,39 @@ const App = {
         let content = `
             <!DOCTYPE html><html><head><title>MSE Report</title></head>
             <body style="font-family: 'Times New Roman', Times, serif; font-size: 12pt;">
+                <h1 style="text-align: center;">Mental Status Examination Report</h1>
         `;
 
         const formStructure = [
-            { title: '1. Administrative & Basic Details', fields: ['patient-name', 'age', 'sex', 'observation-datetime', 'education', 'occupation', 'marital-status', 'informant', 'informant-relation'] },
-            { title: '2. Clinical Background', fields: ['chief-complaints'] },
-            { title: 'Developmental History', fields: ['dev-birth-weight', 'dev-milestones', 'dev-birth-order', 'dev-childhood-disorders'] },
-            { title: 'Family History', fields: ['family-type', 'family-ses', 'family-relationships'] },
+            { title: 'PSYCHIATRIC HISTORY AND MENTAL STATUS EXAMINATION', fields: ['examined-by', 'date', 'patient-name', 'age', 'sex', 'place', 'education', 'occupation', 'religion', 'marital-status', 'informant', 'informant-relation'] },
+            { title: '2. Clinical Background', fields: ['chief-complaints', 'mode-of-onset', 'precipitating-factors', 'reason-for-consultation', 'history-of-present-illness'] },
+            { title: 'History', fields: [] },
+            { title: 'A) Early Development and Childhood', fields: ['dev-birth-weight', 'dev-milestones', 'dev-birth-order', 'dev-childhood-disorders'] },
+            { title: 'B) Educational History', fields: ['educational-history'] },
+            { title: 'C) Occupational History', fields: ['occupational-history'] },
+            { title: 'D) Sleep', fields: ['sleep'] },
+            { title: 'E) Eating', fields: ['eating'] },
+            { title: 'F) Bowels', fields: ['bowels'] },
+            { title: 'G) Personal care', fields: ['personal-care'] },
+            { title: 'H) Treatment History', fields: ['treatment-history'] },
+            { title: 'I) Past History of Mental Illness', fields: ['past-history-of-mental-illness'] },
+            { title: 'J) Family History', fields: ['family-type', 'family-ses', 'family-relationships'] },
+            { title: 'Genogram', fields: ['genogram'] },
             { title: 'Premorbid Personality', fields: ['pm-mood', 'pm-social', 'pm-leisure'] },
-            { title: '3. Mental Status Examination (MSE)', fields: [] }, // Placeholder
-            { title: 'A. Appearance & Behavior', fields: ['body-built', 'grooming', 'eye-contact', 'psychomotor-activity'] },
-            { title: 'B. Speech & Thought', fields: ['speech-rate', 'relevance-coherence', 'risk-assessment'] },
-            { title: 'C. Perception & Cognition', fields: ['orientation-time', 'orientation-place', 'orientation-person'] },
-            { title: 'Memory', fields: ['memory-immediate', 'memory-recent', 'memory-remote'] },
-            { title: 'D. Clinical Summary', fields: ['judgment', 'insight'] }
+            { title: 'MENTAL STATUS EXAMINATION', fields: [] },
+            { title: 'General Appearance', fields: ['general-appearance', 'body-built', 'dressing', 'grooming', 'rapport', 'psychomotor-activity', 'eye-contact', 'attitude-toward-examiner', 'facial-expressions', 'level-of-distress', 'abnormal-movements-or-postures'] },
+            { title: 'Speech', fields: ['speech-rate', 'reaction-time', 'articulation-and-fluency', 'relevance', 'coherence', 'speech-latency', 'prosody-of-speech', 'tone', 'tempo', 'volume', 'quantity'] },
+            { title: 'Mood', fields: ['mood'] },
+            { title: 'Affect', fields: ['quality', 'congruency', 'range', 'mobility', 'appropriateness-to-situation'] },
+            { title: 'Thought', fields: ['thought-process', 'delusions', 'depressive-ideations', 'risk-assessment', 'obsessions-and-compulsions', 'phobias'] },
+            { title: 'Perception', fields: ['hallucination', 'illusion', 'dissociation', 'agnosia'] },
+            { title: 'Sensorium and Cognition', fields: ['orientation', 'level-of-consciousness', 'attention', 'concentration'] },
+            { title: 'Memory', fields: ['memory-immediate', 'memory-recent', 'memory-remote', 'general-knowledge'] },
+            { title: 'Comprehension', fields: ['comprehension'] },
+            { title: 'Arithematic Ability', fields: ['arithematic-ability'] },
+            { title: 'Abstract Ability', fields: ['abstract-ability'] },
+            { title: 'Judgement', fields: ['personal-judgement', 'social-judgement'] },
+            { title: 'Insight', fields: ['insight'] }
         ];
 
         formStructure.forEach(section => {
@@ -316,7 +362,7 @@ const App = {
             });
         });
         
-        content += '</body></html>';
+        content += '<p style="text-align: center; margin-top: 40px;">This report is created using the Digital MSE Record by Agnivesh_Indian.</p></body></html>';
 
         var converted = htmlDocx.asBlob(content);
         var url = URL.createObjectURL(converted);
