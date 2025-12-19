@@ -1,0 +1,140 @@
+/* CSS for mobile devices */
+body {
+    padding: 10px;
+    font-size: 16px;
+}
+
+.container {
+    padding: 15px;
+}
+
+/* General mobile improvements */
+h1 {
+    font-size: 1.8rem;
+}
+
+h2 {
+    font-size: 1.4rem;
+}
+
+h3 {
+    font-size: 1.1rem;
+}
+
+/* Header */
+.header-controls {
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.navigation-links, .theme-switch-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.theme-switch-wrapper {
+    justify-content: space-between;
+    padding: 0 10px;
+}
+
+/* Buttons */
+.btn-dashboard, button {
+    width: 100%;
+    text-align: center;
+    padding: 15px;
+    font-size: 1.1rem;
+}
+
+.button-group {
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Form layout */
+.form-grid {
+    grid-template-columns: 1fr !important; /* Force single column layout */
+    gap: 20px;
+}
+
+input[type="text"], 
+input[type="number"], 
+input[type="password"], 
+input[type="datetime-local"], 
+select, 
+textarea {
+    padding: 15px;
+}
+
+/* Table layout for dashboard */
+@media screen and (max-width: 768px) {
+    table, thead, tbody, th, td, tr { 
+        display: block; 
+    }
+    thead tr { 
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+    tr { 
+        border: 1px solid var(--border-color); 
+        margin-bottom: 15px;
+        border-radius: 8px;
+        padding: 15px;
+    }
+    td { 
+        border: none;
+        border-bottom: 1px solid #eee; 
+        position: relative;
+        padding-left: 50%; 
+        white-space: normal;
+        text-align: right;
+        min-height: 30px; /* Ensure space for the label */
+    }
+    .dark-mode td {
+        border-bottom: 1px solid #4a5568;
+    }
+    td:before { 
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        width: 45%; 
+        padding-right: 10px; 
+        white-space: nowrap;
+        text-align: left;
+        font-weight: bold;
+        content: attr(data-label);
+        color: var(--primary-color);
+    }
+    .actions-cell {
+        padding-left: 15px;
+        text-align: left;
+        padding-top: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+     .actions-cell:before {
+        display: none;
+    }
+    .actions-cell button, .actions-cell a {
+        width: 100%;
+        box-sizing: border-box;
+    }
+}
+
+/* Modal on mobile */
+.modal-content {
+    width: 95%;
+    margin: 10% auto;
+    max-height: 80vh;
+}
+
+.modal-header h2 {
+    font-size: 1.5rem;
+}
+
+.modal-body {
+    padding: 10px;
+}
