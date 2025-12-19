@@ -166,42 +166,88 @@ const App = {
         });
     },
 
-    viewRecord: function(mseId) { // Changed id to mseId
-        const record = this.getMseRecords().find(r => r.mseId === mseId); // Using new function name
+    viewRecord: function(mseId) { 
+        const record = this.getMseRecords().find(r => r.mseId === mseId);
         if (!record) return;
 
         const modal = document.getElementById('view-modal');
-        document.getElementById('modal-patient-id').textContent = `MSE Record: ${mseId}`; // Changed to mseId and added prefix
+        document.getElementById('modal-patient-id').textContent = `MSE Record: ${mseId}`;
         const bodyContent = document.getElementById('modal-body-content');
         
+        const mapHtmlIdToLabel = (htmlId) => {
+            const labels = {
+                'patient-name': 'Patient Name', 'examined-by': 'Examined by', 'date': 'Date', 'age': 'Age', 'sex': 'Sex', 'place': 'Place', 'education': 'Education', 'occupation': 'Occupation', 'religion': 'Religion', 'marital-status': 'Marital Status', 'informant': 'Informant', 'informant-relation': 'Relation',
+                'chief-complaints': 'Chief complaints with duration', 'mode-of-onset': 'Mode of onset', 'precipitating-factors': 'Precipitating Factors', 'reason-for-consultation': 'Reason for consultation', 'history-of-present-illness': 'History of Present Illness',
+                'dev-birth-weight': 'Birth Weight', 'dev-milestones': 'Developmental Milestones', 'dev-birth-order': 'Birth Order', 'dev-childhood-disorders': 'Childhood Disorder',
+                'educational-history': 'Educational History', 'occupational-history': 'Occupational History', 'sleep': 'Sleep', 'eating': 'Eating', 'bowels': 'Bowels', 'personal-care': 'Personal care',
+                'treatment-history': 'Treatment History', 'past-history-of-mental-illness': 'Past History of Mental Illness',
+                'family-type': 'Type of Family', 'family-ses': 'Socio-Economic Status', 'genogram': 'Genogram', 'family-relationships': 'Interpersonal Relationship with Family',
+                'pm-mood': 'Predominant Mood', 'pm-social': 'Social Relation', 'pm-leisure': 'Use of Leisure Time',
+                'general-appearance': 'General Appearance', 'body-built': 'Body Built', 'dressing': 'Dressing', 'grooming': 'Hygiene and Grooming', 'rapport': 'Rapport', 'psychomotor-activity': 'Psychomotor Activity', 'eye-contact': 'Eye Contact with the Examiner', 'attitude-toward-examiner': 'Attitude toward Examiner', 'facial-expressions': 'Facial Expressions', 'level-of-distress': 'Level of distress', 'abnormal-movements-or-postures': 'Abnormal Movements or Postures',
+                'speech-rate': 'Voice and Speech Rate', 'reaction-time': 'Reaction Time', 'articulation-and-fluency': 'Articulation and Fluency', 'relevance': 'Relevance', 'coherence': 'Coherence', 'speech-latency': 'Speech Latency', 'prosody-of-speech': 'Prosody of Speech', 'tone': 'Tone', 'tempo': 'Tempo', 'volume': 'Volume', 'quantity': 'Quantity',
+                'mood': 'Mood',
+                'quality': 'Quality', 'congruency': 'Congruency', 'range': 'Range', 'mobility': 'Mobility', 'appropriateness-to-situation': 'Appropriateness to situation',
+                'thought-process': 'Thought Process', 'delusions': 'Delusions', 'depressive-ideations': 'Depressive Ideations', 'risk-assessment': 'Suicidal or Homicidal Ideations', 'obsessions-and-compulsions': 'Obsessions and Compulsions', 'phobias': 'Phobias',
+                'hallucination': 'Hallucination', 'illusion': 'Illusion', 'dissociation': 'Dissociation', 'agnosia': 'Agnosia',
+                'orientation': 'Orientation', 'level-of-consciousness': 'Level of Consciousness', 'attention': 'Attention', 'concentration': 'Concentration',
+                'memory-immediate': 'Immediate Memory', 'memory-recent': 'Recent Memory', 'memory-remote': 'Remote Memory', 'general-knowledge': 'General Knowledge', 'comprehension': 'Comprehension', 'arithematic-ability': 'Arithematic Ability', 'abstract-ability': 'Abstract Ability',
+                'personal-judgement': 'Personal Judgement', 'social-judgement': 'Social Judgement',
+                'insight': 'Insight'
+            };
+            return labels[htmlId] || htmlId;
+        };
+
         let content = '';
-        // This is a simple view. The PDF/DOCX will be more structured.
-        const formStructure = [ // Re-using form structure for consistent display
-            { title: '1. Administrative & Basic Details', fields: ['patient-name', 'age', 'sex', 'observation-datetime', 'education', 'occupation', 'marital-status', 'informant', 'informant-relation'] },
-            { title: '2. Clinical Background', fields: ['chief-complaints'] },
-            { title: 'Developmental History', fields: ['dev-birth-weight', 'dev-milestones', 'dev-birth-order', 'dev-childhood-disorders'] },
-            { title: 'Family History', fields: ['family-type', 'family-ses', 'family-relationships'] },
+        const formStructure = [
+            { title: 'PSYCHIATRIC HISTORY AND MENTAL STATUS EXAMINATION', fields: ['patient-name', 'examined-by', 'date', 'age', 'sex', 'place', 'education', 'occupation', 'religion', 'marital-status', 'informant', 'informant-relation'] },
+            { title: '2. Clinical Background', fields: ['chief-complaints', 'mode-of-onset', 'precipitating-factors', 'reason-for-consultation', 'history-of-present-illness'] },
+            { title: 'History', fields: [] },
+            { title: 'A) Early Development and Childhood', fields: ['dev-birth-weight', 'dev-milestones', 'dev-birth-order', 'dev-childhood-disorders'] },
+            { title: 'B) Educational History', fields: ['educational-history'] },
+            { title: 'C) Occupational History', fields: ['occupational-history'] },
+            { title: 'D) Sleep', fields: ['sleep'] },
+            { title: 'E) Eating', fields: ['eating'] },
+            { title: 'F) Bowels', fields: ['bowels'] },
+            { title: 'G) Personal care', fields: ['personal-care'] },
+            { title: 'H) Treatment History', fields: ['treatment-history'] },
+            { title: 'I) Past History of Mental Illness', fields: ['past-history-of-mental-illness'] },
+            { title: 'J) Family History', fields: ['family-type', 'family-ses', 'family-relationships'] },
+            { title: 'Genogram', fields: ['genogram'] },
             { title: 'Premorbid Personality', fields: ['pm-mood', 'pm-social', 'pm-leisure'] },
-            { title: '3. Mental Status Examination (MSE)', fields: [] }, // Placeholder
-            { title: 'A. Appearance & Behavior', fields: ['body-built', 'grooming', 'eye-contact', 'psychomotor-activity'] },
-            { title: 'B. Speech & Thought', fields: ['speech-rate', 'relevance-coherence', 'risk-assessment'] },
-            { title: 'C. Perception & Cognition', fields: ['orientation-time', 'orientation-place', 'orientation-person'] },
-            { title: 'Memory', fields: ['memory-immediate', 'memory-recent', 'memory-remote'] },
-            { title: 'D. Clinical Summary', fields: ['judgment', 'insight'] }
+            { title: 'MENTAL STATUS EXAMINATION', fields: [] },
+            { title: 'General Appearance', fields: ['general-appearance', 'body-built', 'dressing', 'grooming', 'rapport', 'psychomotor-activity', 'eye-contact', 'attitude-toward-examiner', 'facial-expressions', 'level-of-distress', 'abnormal-movements-or-postures'] },
+            { title: 'Speech', fields: ['speech-rate', 'reaction-time', 'articulation-and-fluency', 'relevance', 'coherence', 'speech-latency', 'prosody-of-speech', 'tone', 'tempo', 'volume', 'quantity'] },
+            { title: 'Mood', fields: ['mood'] },
+            { title: 'Affect', fields: ['quality', 'congruency', 'range', 'mobility', 'appropriateness-to-situation'] },
+            { title: 'Thought', fields: ['thought-process', 'delusions', 'depressive-ideations', 'risk-assessment', 'obsessions-and-compulsions', 'phobias'] },
+            { title: 'Perception', fields: ['hallucination', 'illusion', 'dissociation', 'agnosia'] },
+            { title: 'Sensorium and Cognition', fields: ['orientation', 'level-of-consciousness', 'attention', 'concentration'] },
+            { title: 'Memory', fields: ['memory-immediate', 'memory-recent', 'memory-remote', 'general-knowledge'] },
+            { title: 'Comprehension', fields: ['comprehension'] },
+            { title: 'Arithematic Ability', fields: ['arithematic-ability'] },
+            { title: 'Abstract Ability', fields: ['abstract-ability'] },
+            { title: 'Judgement', fields: ['personal-judgement', 'social-judgement'] },
+            { title: 'Insight', fields: ['insight'] }
         ];
 
         formStructure.forEach(section => {
-            let sectionContent = '';
+            let hasContent = false;
+            let sectionContent = `<table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">`;
             section.fields.forEach(fieldId => {
-                const labelEl = document.querySelector(`label[for=${fieldId}]`);
-                const label = labelEl ? labelEl.innerText : fieldId;
-                const value = record.data[fieldId] || 'N/A';
-                if (value !== 'N/A') { // Only show fields with values
-                    sectionContent += `<p><strong>${label}:</strong> ${value.replace(/\n/g, '<br>')}</p>`;
+                if (record.data[fieldId]) {
+                    hasContent = true;
+                    let label = mapHtmlIdToLabel(fieldId);
+                    let value = record.data[fieldId];
+                    if (fieldId === 'patient-name') {
+                        value = '********';
+                    }
+                    sectionContent += `<tr><td style="padding: 8px; border: 1px solid #ddd; width: 30%; font-weight: bold;">${label}</td><td style="padding: 8px; border: 1px solid #ddd;">${value.replace(/\n/g, '<br/>')}</td></tr>`;
                 }
             });
-            if (sectionContent) {
-                content += `<h3>${section.title}</h3>${sectionContent}`;
+            sectionContent += `</table>`;
+
+            if(hasContent){
+                content += `<h3 style="text-align: left; margin-top: 20px; font-family: 'Inter', sans-serif; border-bottom: 1px solid #ccc; padding-bottom: 5px;">${section.title}</h3>${sectionContent}`;
             }
         });
 
@@ -374,14 +420,27 @@ const App = {
 
         if (!record) { alert('MSE Record not found.'); return; }
         
-        // --- Data Extraction and HTML Generation ---
         const mapHtmlIdToLabel = (htmlId) => {
-            const el = document.getElementById(htmlId); // This might not work correctly if element is not in current DOM
-            if (el) {
-                const label = document.querySelector(`label[for=${htmlId}]`);
-                return label ? label.innerText.replace(':', '') : el.placeholder || htmlId;
-            }
-            return htmlId; // Fallback
+            const labels = {
+                'patient-name': 'Patient Name', 'examined-by': 'Examined by', 'date': 'Date', 'age': 'Age', 'sex': 'Sex', 'place': 'Place', 'education': 'Education', 'occupation': 'Occupation', 'religion': 'Religion', 'marital-status': 'Marital Status', 'informant': 'Informant', 'informant-relation': 'Relation',
+                'chief-complaints': 'Chief complaints with duration', 'mode-of-onset': 'Mode of onset', 'precipitating-factors': 'Precipitating Factors', 'reason-for-consultation': 'Reason for consultation', 'history-of-present-illness': 'History of Present Illness',
+                'dev-birth-weight': 'Birth Weight', 'dev-milestones': 'Developmental Milestones', 'dev-birth-order': 'Birth Order', 'dev-childhood-disorders': 'Childhood Disorder',
+                'educational-history': 'Educational History', 'occupational-history': 'Occupational History', 'sleep': 'Sleep', 'eating': 'Eating', 'bowels': 'Bowels', 'personal-care': 'Personal care',
+                'treatment-history': 'Treatment History', 'past-history-of-mental-illness': 'Past History of Mental Illness',
+                'family-type': 'Type of Family', 'family-ses': 'Socio-Economic Status', 'genogram': 'Genogram', 'family-relationships': 'Interpersonal Relationship with Family',
+                'pm-mood': 'Predominant Mood', 'pm-social': 'Social Relation', 'pm-leisure': 'Use of Leisure Time',
+                'general-appearance': 'General Appearance', 'body-built': 'Body Built', 'dressing': 'Dressing', 'grooming': 'Hygiene and Grooming', 'rapport': 'Rapport', 'psychomotor-activity': 'Psychomotor Activity', 'eye-contact': 'Eye Contact with the Examiner', 'attitude-toward-examiner': 'Attitude toward Examiner', 'facial-expressions': 'Facial Expressions', 'level-of-distress': 'Level of distress', 'abnormal-movements-or-postures': 'Abnormal Movements or Postures',
+                'speech-rate': 'Voice and Speech Rate', 'reaction-time': 'Reaction Time', 'articulation-and-fluency': 'Articulation and Fluency', 'relevance': 'Relevance', 'coherence': 'Coherence', 'speech-latency': 'Speech Latency', 'prosody-of-speech': 'Prosody of Speech', 'tone': 'Tone', 'tempo': 'Tempo', 'volume': 'Volume', 'quantity': 'Quantity',
+                'mood': 'Mood',
+                'quality': 'Quality', 'congruency': 'Congruency', 'range': 'Range', 'mobility': 'Mobility', 'appropriateness-to-situation': 'Appropriateness to situation',
+                'thought-process': 'Thought Process', 'delusions': 'Delusions', 'depressive-ideations': 'Depressive Ideations', 'risk-assessment': 'Suicidal or Homicidal Ideations', 'obsessions-and-compulsions': 'Obsessions and Compulsions', 'phobias': 'Phobias',
+                'hallucination': 'Hallucination', 'illusion': 'Illusion', 'dissociation': 'Dissociation', 'agnosia': 'Agnosia',
+                'orientation': 'Orientation', 'level-of-consciousness': 'Level of Consciousness', 'attention': 'Attention', 'concentration': 'Concentration',
+                'memory-immediate': 'Immediate Memory', 'memory-recent': 'Recent Memory', 'memory-remote': 'Remote Memory', 'general-knowledge': 'General Knowledge', 'comprehension': 'Comprehension', 'arithematic-ability': 'Arithematic Ability', 'abstract-ability': 'Abstract Ability',
+                'personal-judgement': 'Personal Judgement', 'social-judgement': 'Social Judgement',
+                'insight': 'Insight'
+            };
+            return labels[htmlId] || htmlId;
         };
 
         let content = `
@@ -391,7 +450,7 @@ const App = {
         `;
 
         const formStructure = [
-            { title: 'PSYCHIATRIC HISTORY AND MENTAL STATUS EXAMINATION', fields: ['examined-by', 'date', 'age', 'sex', 'place', 'education', 'occupation', 'religion', 'marital-status', 'informant', 'informant-relation'] },
+            { title: 'PSYCHIATRIC HISTORY AND MENTAL STATUS EXAMINATION', fields: ['patient-name', 'examined-by', 'date', 'age', 'sex', 'place', 'education', 'occupation', 'religion', 'marital-status', 'informant', 'informant-relation'] },
             { title: '2. Clinical Background', fields: ['chief-complaints', 'mode-of-onset', 'precipitating-factors', 'reason-for-consultation', 'history-of-present-illness'] },
             { title: 'History', fields: [] },
             { title: 'A) Early Development and Childhood', fields: ['dev-birth-weight', 'dev-milestones', 'dev-birth-order', 'dev-childhood-disorders'] },
@@ -424,18 +483,22 @@ const App = {
 
         formStructure.forEach(section => {
             let hasContent = false;
-            let sectionContent = ``;
+            let sectionContent = `<table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">`;
             section.fields.forEach(fieldId => {
-                if (record.data[fieldId]) { // Only add if data exists
+                if (record.data[fieldId]) {
                     hasContent = true;
                     let label = mapHtmlIdToLabel(fieldId);
                     let value = record.data[fieldId];
-                    sectionContent += `<tr><td style="padding: 5px; border: 1px solid #ddd;"><strong>${label}</strong></td><td style="padding: 5px; border: 1px solid #ddd;">${value.replace(/\n/g, '<br/>')}</td></tr>`;
+                    if (fieldId === 'patient-name') {
+                        value = '********';
+                    }
+                    sectionContent += `<tr><td style="padding: 8px; border: 1px solid #ddd; width: 30%; font-weight: bold;">${label}</td><td style="padding: 8px; border: 1px solid #ddd;">${value.replace(/\n/g, '<br/>')}</td></tr>`;
                 }
             });
+            sectionContent += `</table>`;
 
             if(hasContent){
-                content += `<h3 style="text-align: left; margin-top: 20px;">${section.title}</h3><table style="width: 100%; border-collapse: collapse;"><tbody>${sectionContent}</tbody></table>`;
+                content += `<h3 style="text-align: left; margin-top: 20px; font-family: 'Inter', sans-serif; border-bottom: 1px solid #ccc; padding-bottom: 5px;">${section.title}</h3>${sectionContent}`;
             }
         });
         
@@ -445,7 +508,7 @@ const App = {
         var url = URL.createObjectURL(converted);
         var link = document.createElement('a');
         link.href = url;
-        link.download = `${record.mseId || 'MSE'}-Report.docx`; // Changed to mseId
+        link.download = `${record.mseId || 'MSE'}-Report.docx`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

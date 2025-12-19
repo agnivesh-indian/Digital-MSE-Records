@@ -112,7 +112,11 @@
         .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
         .modal-header h2 { color: var(--primary-color); }
         .close-btn { color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; }
-        .modal-body { padding-top: 15px; }
+        .modal-body { 
+            padding-top: 15px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
 
         footer {
             margin-top: 40px;
