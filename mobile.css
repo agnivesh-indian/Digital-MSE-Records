@@ -1,257 +1,193 @@
-/* Digital-MSE-Records - Mobile App UI CSS */
+/* Digital-MSE-Records - Mobile App UI CSS - Google Form Style */
 
 /*- Global Styles -*/
 body {
-    font-family: 'Inter', sans-serif;
-    background-color: var(--background-color);
-    color: var(--text-color);
+    font-family: 'Roboto', 'Inter', sans-serif; /* Google's font */
+    background-color: #f0f2f5; /* Google-like background */
+    color: #202124;
     margin: 0;
-    -webkit-text-size-adjust: 100%; /* Prevent font scaling in landscape mode */
+    -webkit-text-size-adjust: 100%;
 }
 
 .container {
-    padding: 15px; /* Slightly more padding */
+    padding: 10px;
     max-width: 100%;
     box-shadow: none;
-    border-radius: 0;
+    background-color: transparent;
 }
 
 /*- Typography -*/
-h1, h2 {
-    text-align: left;
-}
-
 h1 {
-    font-size: 1.5rem; /* Adjusted for mobile */
-    margin-bottom: 25px;
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: #202124;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 h2 {
-    font-size: 1.3rem; /* Adjusted for mobile */
-    margin-top: 30px;
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--primary-color);
+    margin-top: 0;
+    padding-top: 0;
     border-bottom: none;
-    padding-bottom: 0;
 }
 
 h3 {
     font-size: 1.1rem;
+    font-weight: 500;
+    color: #202124;
+    margin-top: 20px;
+    margin-bottom: 10px;
 }
 
-/*- App-Like Form -*/
+h4 {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #5f6368;
+}
+
+
+/*- Google Form-like Card Sections -*/
+.form-section {
+    background-color: #ffffff;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    padding: 24px;
+}
+
+.form-section h2 {
+    border-bottom: 1px solid #dadce0;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+
+/*- Form Grid & Groups -*/
 .form-grid {
-    grid-template-columns: 1fr !important; /* Force single column layout */
-    gap: 20px; /* Adjust gap for single column */
+    display: grid;
+    grid-template-columns: 1fr !important; /* Force single column */
+    gap: 20px;
 }
 
 .form-group {
-    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+.form-group-full {
+    grid-column: 1 / -1;
 }
 
+/*- Input & Label Styles -*/
 label {
-    font-weight: 500;
-    margin-bottom: 8px;
-    display: block;
+    font-weight: 400;
+    font-size: 1rem;
+    color: #202124;
+    margin-bottom: 12px;
 }
 
-input[type="text"], 
-input[type="number"], 
-input[type="password"], 
-input[type="datetime-local"], 
-select, 
+input[type="text"],
+input[type="number"],
+input[type="password"],
+input[type="datetime-local"],
+select,
 textarea {
     width: 100%;
     padding: 14px;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    border: 1px solid #dadce0;
     font-size: 1rem;
-    background-color: var(--input-bg);
-    color: var(--input-text);
+    background-color: #f8f9fa;
+    color: #202124;
     box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="password"]:focus,
+input[type-="datetime-local"]:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 95, 115, 0.2);
+    background-color: #ffffff;
 }
 
 textarea {
-    min-height: 140px; /* Taller text areas */
+    min-height: 120px;
+    resize: vertical;
 }
 
-/* Make select dropdowns more mobile friendly */
 select {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E');
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22%235f6368%22%3E%3Cpath%20d%3D%22M7%2010l5%205%205-5z%22/%3E%3C/svg%3E');
     background-repeat: no-repeat;
     background-position: right 1rem center;
-    background-size: 0.65em auto;
-    padding-right: 2.5rem; /* Make space for arrow */
+    background-size: 1.5em auto;
+    padding-right: 3rem;
 }
 
+.alert-field label {
+    color: var(--danger-color);
+    font-weight: 500;
+}
+.alert-field textarea {
+    border-left: 3px solid var(--danger-color);
+    background-color: rgba(217, 4, 41, 0.05);
+}
 
-/*- Header Controls -*/
+/*- Header & Buttons -*/
 .header-controls {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #fff;
+    border-bottom: 1px solid #dadce0;
 }
 
-.navigation-links,
-.theme-switch-wrapper {
-    width: 100%;
+.navigation-links a.btn-dashboard {
+    background-color: transparent;
+    color: var(--primary-color);
+    padding: 8px 12px;
+    font-weight: 500;
+    border-radius: 4px;
+}
+.navigation-links a.btn-dashboard:hover {
+    background-color: rgba(0, 95, 115, 0.05);
 }
 
-.theme-switch-wrapper {
-    justify-content: space-between; /* Pushes toggle to the right */
-}
-
-/*- Button Styles -*/
 .button-group {
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 25px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding: 0 24px 24px;
 }
 
-.btn-primary, .btn-secondary, .download-btn, .btn-dashboard {
-    width: 100%;
-    padding: 16px; /* Larger tap target */
-    font-size: 1.1rem;
-    border-radius: 8px;
-    text-align: center;
+.btn-primary, .btn-secondary {
+    width: auto;
+    padding: 12px 24px;
+    font-size: 1rem;
+    border-radius: 4px;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
 }
 
 .download-btn-group {
-    width: 100%;
+    display: none; /* Hiding download options on mobile for simplicity, can be re-enabled if needed */
 }
 
-.download-options {
-    position: static; /* No longer absolute */
-    display: block; /* Always visible */
-    box-shadow: none;
-    border-top: 1px solid var(--border-color);
-    margin-top: 10px;
-    border-radius: 0;
-}
-
-.download-options a {
-    padding: 14px;
-    display: block;
-    text-align: center;
-    border-bottom: 1px solid var(--border-color);
-}
-.download-options a:last-child {
-    border-bottom: none;
-}
-.download-btn {
-    display: none; /* Hide the dropdown button itself */
-}
-
-
-/*- Card View for Dashboard -*/
-#records-table {
-    border-collapse: separate;
-    border-spacing: 0 15px; /* Creates space between cards */
-}
-
-#records-table thead {
-    display: none; /* Hide table headers */
-}
-
-#records-table tr {
-    background: var(--container-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    display: block;
-    margin-bottom: 15px;
+footer {
     padding: 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-}
-
-#records-table td {
-    display: block;
-    padding: 8px 0; /* Adjusted padding */
-    border: none;
-    text-align: left;
-    position: relative;
-    padding-left: 50%; /* Make space for label */
-}
-
-#records-table td:before {
-    content: attr(data-label); /* Use data-label for pseudo-element */
-    position: absolute;
-    left: 0;
-    width: 45%;
-    padding-right: 10px;
-    white-space: nowrap;
-    font-weight: bold;
-}
-
-
-#records-table .actions-cell {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 15px;
-    padding-left: 0; /* No pseudo-element for actions */
-}
-#records-table .actions-cell:before {
-    display: none;
-}
-
-
-#records-table .actions-cell button, 
-#records-table .actions-cell a {
-    width: 100%;
-    padding: 12px;
-    font-size: 1rem;
-    border-radius: 8px;
-}
-
-/*- Modal -*/
-.modal {
-    background-color: rgba(0,0,0,0.8);
-}
-
-.modal-content {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    border-radius: 0;
-    border: none;
-    overflow-y: auto;
-}
-
-.modal-header {
-    padding: 15px;
-}
-
-.modal-header h2 {
-    font-size: 1.3rem;
-}
-
-.modal-body {
-    padding: 0 15px 15px;
-}
-
-.modal-body h3 {
-    font-size: 1.1rem;
-    margin-top: 20px;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 8px;
-}
-
-.modal-body table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.modal-body td {
-    padding: 10px 5px;
-    display: block;
-    width: 100%;
-    border-bottom: 1px solid var(--border-color);
-}
-.modal-body tr td:first-child {
-    font-weight: bold;
-    background-color: transparent;
-}
-.modal-body table, .modal-body tr, .modal-body td {
-    border: none;
+    font-size: 0.8rem;
 }
