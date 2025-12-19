@@ -209,11 +209,13 @@ const App = {
 
     editRecord: mseId => window.location.href = `index.html?id=${mseId}`, // Changed id to mseId
 
-    deleteRecord: function(mseId) { // Changed id to mseId
-        let records = this.getMseRecords().filter(r => r.mseId !== mseId); // Using new function name
-        localStorage.setItem('mseRecords', JSON.stringify(records));
-        if (document.querySelector('#records-table')) {
-            this.renderDashboard();
+    deleteRecord: function(mseId) {
+        if (confirm(`Are you sure you want to delete the record ${mseId}?`)) {
+            let records = this.getMseRecords().filter(r => r.mseId !== mseId);
+            localStorage.setItem('mseRecords', JSON.stringify(records));
+            if (document.querySelector('#records-table')) {
+                this.renderDashboard();
+            }
         }
     },
     
