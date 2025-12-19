@@ -6,12 +6,14 @@ body {
     background-color: var(--background-color);
     color: var(--text-color);
     margin: 0;
+    -webkit-text-size-adjust: 100%; /* Prevent font scaling in landscape mode */
 }
 
 .container {
-    padding: 10px;
+    padding: 15px; /* Slightly more padding */
     max-width: 100%;
     box-shadow: none;
+    border-radius: 0;
 }
 
 /*- Typography -*/
@@ -20,64 +22,27 @@ h1, h2 {
 }
 
 h1 {
-    font-size: 1.6rem;
-    margin-bottom: 20px;
+    font-size: 1.5rem; /* Adjusted for mobile */
+    margin-bottom: 25px;
 }
 
 h2 {
-    font-size: 1.2rem;
-    margin-top: 20px;
+    font-size: 1.3rem; /* Adjusted for mobile */
+    margin-top: 30px;
     border-bottom: none;
     padding-bottom: 0;
 }
 
-/*- Card View for Dashboard -*/
-#records-table {
-    border-collapse: separate;
-    border-spacing: 0 15px; /* Creates space between cards */
-}
-
-#records-table thead {
-    display: none; /* Hide table headers */
-}
-
-#records-table tr {
-    background: var(--container-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    display: block;
-    margin-bottom: 15px;
-    padding: 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-}
-
-#records-table td {
-    display: block;
-    padding: 5px 0;
-    border: none;
-    text-align: left;
-}
-
-#records-table td:before {
-    display: none; /* Remove pseudo-elements */
-}
-
-#records-table .actions-cell {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 15px;
-}
-
-#records-table .actions-cell button, 
-#records-table .actions-cell a {
-    width: 100%;
-    padding: 12px;
-    font-size: 1rem;
-    border-radius: 8px;
+h3 {
+    font-size: 1.1rem;
 }
 
 /*- App-Like Form -*/
+.form-grid {
+    grid-template-columns: 1fr !important; /* Force single column layout */
+    gap: 20px; /* Adjust gap for single column */
+}
+
 .form-group {
     margin-bottom: 15px;
 }
@@ -105,7 +70,36 @@ textarea {
 }
 
 textarea {
-    min-height: 120px;
+    min-height: 140px; /* Taller text areas */
+}
+
+/* Make select dropdowns more mobile friendly */
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E');
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 0.65em auto;
+    padding-right: 2.5rem; /* Make space for arrow */
+}
+
+
+/*- Header Controls -*/
+.header-controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.navigation-links,
+.theme-switch-wrapper {
+    width: 100%;
+}
+
+.theme-switch-wrapper {
+    justify-content: space-between; /* Pushes toggle to the right */
 }
 
 /*- Button Styles -*/
@@ -115,16 +109,104 @@ textarea {
     margin-top: 25px;
 }
 
-.btn-primary, .btn-secondary, .download-btn {
+.btn-primary, .btn-secondary, .download-btn, .btn-dashboard {
     width: 100%;
-    padding: 15px;
+    padding: 16px; /* Larger tap target */
     font-size: 1.1rem;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.download-btn-group {
+    width: 100%;
+}
+
+.download-options {
+    position: static; /* No longer absolute */
+    display: block; /* Always visible */
+    box-shadow: none;
+    border-top: 1px solid var(--border-color);
+    margin-top: 10px;
+    border-radius: 0;
+}
+
+.download-options a {
+    padding: 14px;
+    display: block;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+}
+.download-options a:last-child {
+    border-bottom: none;
+}
+.download-btn {
+    display: none; /* Hide the dropdown button itself */
+}
+
+
+/*- Card View for Dashboard -*/
+#records-table {
+    border-collapse: separate;
+    border-spacing: 0 15px; /* Creates space between cards */
+}
+
+#records-table thead {
+    display: none; /* Hide table headers */
+}
+
+#records-table tr {
+    background: var(--container-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    display: block;
+    margin-bottom: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+#records-table td {
+    display: block;
+    padding: 8px 0; /* Adjusted padding */
+    border: none;
+    text-align: left;
+    position: relative;
+    padding-left: 50%; /* Make space for label */
+}
+
+#records-table td:before {
+    content: attr(data-label); /* Use data-label for pseudo-element */
+    position: absolute;
+    left: 0;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    font-weight: bold;
+}
+
+
+#records-table .actions-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+    padding-left: 0; /* No pseudo-element for actions */
+}
+#records-table .actions-cell:before {
+    display: none;
+}
+
+
+#records-table .actions-cell button, 
+#records-table .actions-cell a {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
     border-radius: 8px;
 }
 
 /*- Modal -*/
 .modal {
-    background-color: rgba(0,0,0,0.7);
+    background-color: rgba(0,0,0,0.8);
 }
 
 .modal-content {
@@ -137,28 +219,39 @@ textarea {
 }
 
 .modal-header {
-    padding: 20px;
+    padding: 15px;
 }
 
 .modal-header h2 {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
 }
 
 .modal-body {
-    padding: 0 20px 20px;
+    padding: 0 15px 15px;
 }
 
 .modal-body h3 {
-    font-size: 1.2rem;
-    margin-top: 25px;
+    font-size: 1.1rem;
+    margin-top: 20px;
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 8px;
 }
 
 .modal-body table {
-    margin-bottom: 15px;
+    width: 100%;
+    border-collapse: collapse;
 }
 
 .modal-body td {
-    padding: 10px 8px;
+    padding: 10px 5px;
+    display: block;
+    width: 100%;
+    border-bottom: 1px solid var(--border-color);
+}
+.modal-body tr td:first-child {
+    font-weight: bold;
+    background-color: transparent;
+}
+.modal-body table, .modal-body tr, .modal-body td {
+    border: none;
 }
