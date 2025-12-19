@@ -32,20 +32,22 @@ const App = {
         document.getElementById('save-btn').addEventListener('click', () => this.saveRecord());
         document.getElementById('clear-btn').addEventListener('click', () => this.clearForm());
         document.querySelector('.toggle-visibility').addEventListener('click', (event) => this.toggleNameVisibility(event)); // Pass event
-        document.getElementById('observation-datetime').value = new Date().toISOString().slice(0, 16); // Set current date/time
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const recordId = urlParams.get('id');
+
+        if (recordId) {
+            document.querySelector('h1').textContent = `Edit MSE Record: ${recordId}`;
+            this.loadRecordForEditing(recordId);
+        } else {
+            document.getElementById('date').value = new Date().toISOString().slice(0, 16); // Set current date/time for new records
+        }
         
         const downloadBtn = document.querySelector('.download-btn');
         if (downloadBtn) {
             downloadBtn.addEventListener('click', function() {
                 this.nextElementSibling.classList.toggle('show-download');
             });
-        }
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const recordId = urlParams.get('id');
-        if (recordId) {
-            document.querySelector('h1').textContent = `Edit MSE Record: ${recordId}`;
-            this.loadRecordForEditing(recordId);
         }
     },
 
@@ -334,15 +336,14 @@ const App = {
 
         doc.autoTable({
             startY: 30,
-            head: [['Field', 'Value']],
             body: generateTableBody(),
             theme: 'grid',
             styles: { font: 'times', cellPadding: 2.5, fontSize: 10, overflow: 'linebreak' },
-            headStyles: { fillColor: [0, 95, 115], textColor: '#ffffff' },
             columnStyles: {
                 0: { cellWidth: 50 },
                 1: { cellWidth: 'auto' }
             },
+            showHead: 'never',
             addPageContent: function(data) {
                 if (data.pageNumber === 1) {
                     doc.setFontSize(20);
@@ -355,7 +356,8 @@ const App = {
 
                 doc.setFontSize(10);
                 doc.setFont('helvetica', 'normal');
-                doc.text('Page ' + data.pageNumber, doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
+                var str = "Page " + data.pageNumber + " of " + data.doc.internal.getNumberOfPages();
+                doc.text(str, doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
             }
         });
 
