@@ -7,33 +7,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #005f73;
-            --background-color: #e9ecef;
+            --primary-color: #3182ce; /* Professional Blue */
+            --background-color: #f7fafc;
             --container-bg: #ffffff;
-            --text-color: #212529;
-            --border-color: #ced4da;
-            --danger-color: #d90429;
-            --success-color: #2a9d8f;
-            --warning-color: #e9c46a;
+            --text-color: #1a202c;
+            --border-color: #e2e8f0;
+            --danger-color: #e53e3e;
+            --success-color: #38a169;
+            --warning-color: #dd6b20;
             --font-main: 'Inter', sans-serif;
-            --font-report: 'Tinos', serif;
             --input-bg: var(--container-bg);
             --input-text: var(--text-color);
         }
         .dark-mode {
-            --background-color: #1a202c; /* Darker background */
-            --container-bg: #2d3748;    /* Darker container */
-            --text-color: #e2e8f0;      /* Lighter text */
-            --border-color: #4a5568;    /* Adjusted border */
-            --input-bg: #4a5568;        /* Darker input background */
-            --input-text: #e2e8f0;      /* Lighter input text */
+            --background-color: #1a202c;
+            --container-bg: #2d3748;
+            --text-color: #e2e8f0;
+            --border-color: #4a5568;
+            --input-bg: #4a5568;
+            --input-text: #e2e8f0;
         }
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: var(--font-main);
             line-height: 1.6;
             margin: 0;
             padding: 20px;
             background-color: var(--background-color);
+            color: var(--text-color);
         }
         .container {
             max-width: 1200px;
@@ -43,47 +43,72 @@
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
-        h1 { color: var(--primary-color); text-align: center; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
-        th { background-color: #f2f2f2; }
-        .actions-cell { display: flex; gap: 10px; align-items: center; }
-        .actions-cell button { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; color: white; }
-        .view-btn { background-color: #0a9396; }
-        .edit-btn { background-color: #ee9b00; }
-        .delete-btn { background-color: var(--danger-color); }
-        .download-btn-group { position: relative; }
-        .download-btn { background-color: #007bff; }
-        .download-options { display: none; position: absolute; background-color: white; min-width: 100px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; border-radius: 4px; }
-        .download-options a { color: black; padding: 12px 16px; text-decoration: none; display: block; }
-        .download-options a:hover { background-color: #f1f1f1; color: black; }
-        .show-download { display: block; }
-
-        .actions-cell button, .actions-cell a {
-            padding: 8px 12px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            color: white;
+        h1 { 
+            color: var(--primary-color); 
+            text-align: center; 
+            margin-bottom: 30px;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        th, td { 
+            padding: 15px; 
+            text-align: left; 
+            border-bottom: 1px solid var(--border-color); 
+        }
+        th { 
+            background-color: var(--background-color);
+            font-weight: 500;
+        }
+        .dark-mode th {
+            background-color: #2d3748;
+        }
+        .actions-cell { 
+            display: flex; 
+            flex-wrap: wrap;
+            gap: 10px; 
+            align-items: center; 
+        }
+        .actions-cell button, .actions-cell a { 
+            padding: 8px 12px; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            color: white; 
             text-decoration: none;
             display: inline-block;
+            font-size: 14px;
+            transition: background-color 0.2s ease, transform 0.2s ease;
         }
+        .view-btn { background-color: var(--success-color); }
+        .edit-btn { background-color: var(--warning-color); }
+        .delete-btn { background-color: var(--danger-color); }
+        .download-btn { background-color: var(--primary-color); }
 
-        .dark-mode .actions-cell button {
-            background-color: #58a6ff;
-        }
+        .download-btn-group { position: relative; }
+        .download-options { display: none; position: absolute; background-color: white; min-width: 100px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; border-radius: 4px; border: 1px solid var(--border-color); }
+        .download-options a { color: var(--text-color); padding: 10px 15px; text-decoration: none; display: block; background-color: var(--container-bg); }
+        .download-options a:hover { background-color: var(--background-color); }
+        .show-download { display: block; }
 
         .dark-mode .download-options {
             background-color: #2d3748;
+            border-color: #4a5568;
         }
-
         .dark-mode .download-options a {
             color: #e2e8f0;
+            background-color: #4a5568;
+        }
+        .dark-mode .download-options a:hover {
+            background-color: #2d3748;
         }
 
         /* Modal Styles */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
-        .modal-content { background-color: #fefefe; margin: 5% auto; padding: 30px; border: 1px solid #888; width: 80%; max-width: 800px; border-radius: 8px; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); }
+        .modal-content { background-color: var(--container-bg); margin: 5% auto; padding: 30px; border: 1px solid var(--border-color); width: 80%; max-width: 800px; border-radius: 8px; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
         .modal-header h2 { color: var(--primary-color); }
         .close-btn { color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; }
@@ -98,14 +123,121 @@
         .dark-mode footer {
             color: #a0aec0;
         }
-
-        button, .actions-cell a {
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease;
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .btn-dashboard {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-main);
+            font-size: 14px;
+        }
+        .btn-dashboard:hover {
+            background-color: #2b6cb0;
+        }
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+        }
+        .theme-switch {
+            display: inline-block;
+            height: 34px;
+            position: relative;
+            width: 60px;
+            margin-left: 10px;
+        }
+        .theme-switch input {
+            display:none;
+        }
+        .slider {
+            background-color: #ccc;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+        }
+        .slider:before {
+            background-color: #fff;
+            bottom: 4px;
+            content: "";
+            height: 26px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            width: 26px;
+        }
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .slider.round {
+            border-radius: 34px;
+        }
+        .slider.round:before {
+            border-radius: 50%;
         }
 
-        button:hover, .actions-cell a:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        /* Mobile Responsive Styles */
+        @media screen and (max-width: 768px) {
+            table, thead, tbody, th, td, tr { 
+                display: block; 
+            }
+            thead tr { 
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+            tr { 
+                border: 1px solid var(--border-color); 
+                margin-bottom: 15px;
+                border-radius: 8px;
+                padding: 15px;
+            }
+            td { 
+                border: none;
+                border-bottom: 1px solid #eee; 
+                position: relative;
+                padding-left: 50%; 
+                white-space: normal;
+                text-align: right;
+            }
+            .dark-mode td {
+                border-bottom: 1px solid #4a5568;
+            }
+            td:before { 
+                position: absolute;
+                top: 15px;
+                left: 15px;
+                width: 45%; 
+                padding-right: 10px; 
+                white-space: nowrap;
+                text-align: left;
+                font-weight: bold;
+                content: attr(data-label);
+                color: var(--primary-color);
+            }
+            .actions-cell {
+                padding-left: 15px;
+                text-align: left;
+                padding-top: 20px;
+            }
+             .actions-cell:before {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -113,7 +245,7 @@
     <div class="container">
         <div class="header-controls">
             <div class="navigation-links">
-                <a href="index.html" class="btn-dashboard">Create New MSE</a>
+                <button onclick="window.location.href='index.html'" class="btn-dashboard">Create New MSE</button>
             </div>
             <div class="theme-switch-wrapper">
                 <span>Dark Mode</span>

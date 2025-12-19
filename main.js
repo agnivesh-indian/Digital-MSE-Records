@@ -140,14 +140,14 @@ const App = {
 
     renderDashboard: function() {
         const tableBody = document.querySelector('#records-table tbody');
-        tableBody.innerHTML = ''; 
-        this.getMseRecords().forEach(record => { // Using new function name
+        tableBody.innerHTML = '';
+        this.getMseRecords().forEach(record => {
             const date = record.data['observation-datetime'] ? new Date(record.data['observation-datetime']).toLocaleString() : 'N/A';
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${record.mseId}</td> <!-- Changed id to mseId -->
-                <td>${date}</td>
-                <td class="actions-cell">
+                <td data-label="MSE Record ID">${record.mseId}</td>
+                <td data-label="Date of Observation">${date}</td>
+                <td class="actions-cell" data-label="Actions">
                     <button class="view-btn" onclick="App.viewRecord('${record.mseId}')">View</button>
                     <button class="edit-btn" onclick="App.editRecord('${record.mseId}')">Edit</button>
                     <div class="download-btn-group">
@@ -250,7 +250,14 @@ const App = {
         this.generateDocx(record);
     },
 
-    generatePdf: function(record) { // Updated to use mseId
+    generatePdf: function(recordOrMseId) { // Updated to use mseId
+        let record;
+        if (typeof recordOrMseId === 'string') {
+            record = this.getMseRecords().find(r => r.mseId === recordOrMseId);
+        } else {
+            record = recordOrMseId;
+        }
+
         if (!record) { alert('MSE Record not found.'); return; }
 
         const { jsPDF } = window.jspdf;
@@ -343,7 +350,14 @@ const App = {
         doc.save(`${record.mseId || 'MSE'}-Report.pdf`);
     },
 
-    generateDocx: function(record) { // Updated to use mseId
+    generateDocx: function(recordOrMseId) { // Updated to use mseId
+        let record;
+        if (typeof recordOrMseId === 'string') {
+            record = this.getMseRecords().find(r => r.mseId === recordOrMseId);
+        } else {
+            record = recordOrMseId;
+        }
+
         if (!record) { alert('MSE Record not found.'); return; }
         
         // --- Data Extraction and HTML Generation ---
