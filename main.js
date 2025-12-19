@@ -276,7 +276,7 @@ const App = {
         const generateTableBody = () => {
             let body = [];
             const formStructure = [
-                { title: 'PSYCHIATRIC HISTORY AND MENTAL STATUS EXAMINATION', fields: ['examined-by', 'date', 'age', 'sex', 'place', 'education', 'occupation', 'religion', 'marital-status', 'informant', 'informant-relation'] },
+                { title: 'PSYCHIATRIC HISTORY AND MENTAL STATUS EXAMINATION', fields: ['patient-name', 'examined-by', 'date', 'age', 'sex', 'place', 'education', 'occupation', 'religion', 'marital-status', 'informant', 'informant-relation'] },
                 { title: '2. Clinical Background', fields: ['chief-complaints', 'mode-of-onset', 'precipitating-factors', 'reason-for-consultation', 'history-of-present-illness'] },
                 { title: 'History', fields: [] },
                 { title: 'A) Early Development and Childhood', fields: ['dev-birth-weight', 'dev-milestones', 'dev-birth-order', 'dev-childhood-disorders'] },
@@ -315,6 +315,9 @@ const App = {
                         hasContent = true;
                         let label = mapHtmlIdToLabel(fieldId);
                         let value = record.data[fieldId];
+                        if (fieldId === 'patient-name') {
+                            value = '********';
+                        }
                         sectionBody.push([label, value]);
                     }
                 });
@@ -328,22 +331,29 @@ const App = {
         };
 
         doc.autoTable({
-            startY: 15,
+            startY: 30,
             head: [['Field', 'Value']],
             body: generateTableBody(),
             theme: 'grid',
             styles: { font: 'times', cellPadding: 2.5, fontSize: 10, overflow: 'linebreak' },
             headStyles: { fillColor: [0, 95, 115], textColor: '#ffffff' },
+            columnStyles: {
+                0: { cellWidth: 50 },
+                1: { cellWidth: 'auto' }
+            },
             addPageContent: function(data) {
-                // Header
-                doc.setFontSize(20);
-                doc.setFont('helvetica', 'bold');
-                doc.text(record.mseId || 'Mental Status Examination Report', doc.internal.pageSize.getWidth() / 2, 10, { align: 'center' });
+                if (data.pageNumber === 1) {
+                    doc.setFontSize(20);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('Mental Status Examination Report', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
+                    doc.setFontSize(14);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(`Record ID: ${record.mseId}`, doc.internal.pageSize.getWidth() / 2, 22, { align: 'center' });
+                }
 
-                // Footer
                 doc.setFontSize(10);
                 doc.setFont('helvetica', 'normal');
-                doc.text('This report is created using the Digital MSE Record by Agnivesh_Indian.', doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
+                doc.text('Page ' + data.pageNumber, doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
             }
         });
 
