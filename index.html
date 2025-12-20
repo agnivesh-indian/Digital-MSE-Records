@@ -290,6 +290,28 @@
         <div class="form-section">
             <h3>Thought</h3>
             <div class="form-group form-group-full"><label for="thought-process">Thought Process:</label><textarea id="thought-process"></textarea></div>
+            <h4>Thought Stream</h4>
+            <div class="form-grid" style="grid-template-columns: repeat(3, 1fr);">
+                <div class="form-group">
+                    <label for="thought-stream-circumstantiality">Circumstantiality:</label>
+                    <select id="thought-stream-circumstantiality">
+                        <option>No</option>
+                        <option>Yes</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="thought-stream-tangentiality">Tangentiality:</label>
+                    <select id="thought-stream-tangentiality">
+                        <option>No</option>
+                        <option>Yes</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="thought-stream-other">Occasional/Other:</label>
+                    <input type="text" id="thought-stream-other">
+                </div>
+            </div>
+
             <h4>Content</h4>
             <div class="form-grid" style="grid-template-columns: repeat(2, 1fr);">
                 <div class="form-group"><label for="delusions">Delusions:</label><input type="text" id="delusions"></div>
@@ -338,12 +360,26 @@
             <div class="form-grid" style="grid-template-columns: repeat(2, 1fr);">
                 <div class="form-group"><label for="personal-judgement">Personal Judgement:</label><input type="text" id="personal-judgement"></div>
                 <div class="form-group"><label for="social-judgement">Social Judgement:</label><input type="text" id="social-judgement"></div>
+                <div class="form-group"><label for="test-judgement">Test Judgement:</label><input type="text" id="test-judgement"></div>
             </div>
         </div>
 
         <div class="form-section">
             <h3>Insight</h3>
             <div class="form-group form-group-full"><select id="insight"><option>Grade 1 (Total denial)</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6 (True emotional insight)</option></select></div>
+        </div>
+
+        <div class="form-section">
+            <h3>Notes</h3>
+            <div class="form-group form-group-full">
+                <textarea id="notes" rows="5"></textarea>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Custom Fields</h3>
+            <div id="custom-fields-container"></div>
+            <button id="add-custom-field-btn" type="button" class="btn-secondary">Add Custom Field</button>
         </div>
 
         <div class="button-group">
@@ -361,6 +397,7 @@
     <footer>
         &copy; Agnivesh_Indian. This is created for the ease of professionals in maintaining the records and add such data.
     </footer>
+    <script src="form-structure.js"></script>
     <script src="main.js"></script>
 </body>
 </html>
