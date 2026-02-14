@@ -320,7 +320,11 @@ const App = {
 
         if (!record) { alert('MSE Record not found.'); return; }
 
-        const { jsPDF } = window.jspdf;
+        if (!window.jsPDF) {
+            alert('jsPDF library not loaded. Please ensure an active internet connection or that the library is available.');
+            return;
+        }
+        const jsPDF = window.jsPDF;
         const doc = new jsPDF();
 
         // --- Data Extraction and Table Generation ---
@@ -397,6 +401,10 @@ const App = {
 
         if (!record) { alert('MSE Record not found.'); return; }
         
+        if (typeof htmlDocx === 'undefined' || !htmlDocx.asBlob) {
+            alert('html-docx-js library not loaded. Please ensure an active internet connection or that the library is available.');
+            return;
+        }
         let content = `
             <!DOCTYPE html><html><head><title>MSE Report</title></head>
             <body style="font-family: 'Times New Roman', Times, serif; font-size: 12pt;">
