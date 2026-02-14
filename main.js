@@ -315,6 +315,9 @@ const App = {
                     .section-container {
                         page-break-inside: avoid !important;
                     }
+                    table tr {
+                        page-break-inside: avoid !important;
+                    }
                 </style>
             </head>
             <body>
