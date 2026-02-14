@@ -311,11 +311,9 @@ const App = {
                     td { padding: 8px; border: 1px solid #ddd; vertical-align: top; }
                     td:first-child { width: 30%; font-weight: bold; background-color: #f2f2f2; }
                     p { text-align: center; margin-top: 40px; color: #777; }
-                    /* Print specific styles for html2pdf */
-                    @media print {
-                        .html2pdf__page-break {
-                            break-before: page;
-                        }
+                    /* New print-specific styles for html2pdf to avoid breaking sections */
+                    .section-container {
+                        page-break-inside: avoid !important;
                     }
                 </style>
             </head>
@@ -323,9 +321,10 @@ const App = {
                 <h1>${record.mseId || 'Mental Status Examination Report'}</h1>
         `;
 
-        FormStructure.structure.forEach((section, index) => {
+        FormStructure.structure.forEach(section => {
+            let sectionHtml = '';
             let hasContent = false;
-            let sectionContent = `<table>`;
+            let sectionTable = `<table>`;
             section.fields.forEach(fieldId => {
                 if (record.data[fieldId]) {
                     hasContent = true;
@@ -334,24 +333,30 @@ const App = {
                     if (fieldId === 'patient-name') {
                         value = '********';
                     }
-                    sectionContent += `<tr><td>${label}</td><td>${value.replace(/\n/g, '<br/>')}</td></tr>`;
+                    sectionTable += `<tr><td>${label}</td><td>${value.replace(/\n/g, '<br/>')}</td></tr>`;
                 }
             });
-            sectionContent += `</table>`;
+            sectionTable += `</table>`;
 
             if(hasContent){
-                // Add page break class to h3 elements for better pagination, except the very first one
-                content += `<h3 class="${index > 0 ? 'html2pdf__page-break' : ''}">${section.title}</h3>${sectionContent}`;
+                // Wrap h3 and table in a div with section-container class
+                sectionHtml += `<div class="section-container">`;
+                sectionHtml += `<h3>${section.title}</h3>`;
+                sectionHtml += sectionTable;
+                sectionHtml += `</div>`;
+                content += sectionHtml;
             }
         });
 
         if (record.data.customFields && record.data.customFields.length > 0) {
-            content += `<h3 class="html2pdf__page-break">Custom Fields</h3>`;
+            content += `<div class="section-container">`;
+            content += `<h3>Custom Fields</h3>`;
             content += `<table>`;
             record.data.customFields.forEach(field => {
                 content += `<tr><td>${field.label}</td><td>${field.value.replace(/\n/g, '<br/>')}</td></tr>`;
             });
             content += `</table>`;
+            content += `</div>`;
         }
         
         content += '<p>This report is created using the Digital MSE Record by Agnivesh_Indian.</p></body></html>';
@@ -365,7 +370,7 @@ const App = {
             filename: `${record.mseId || 'MSE'}-Report.pdf`,
             html2canvas: { scale: 2 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } // Configure page break modes
+            pagebreak: { mode: 'avoid-all' } // Use avoid-all mode to respect page-break-inside: avoid
         }).save();
     },
 
