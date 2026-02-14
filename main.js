@@ -306,24 +306,30 @@ const App = {
                 <style>
                     body { font-family: 'Times New Roman', Times, serif; font-size: 12pt; margin: 20px; }
                     h1 { text-align: center; color: #333; }
-                    h3 { text-align: left; margin-top: 20px; font-family: 'Inter', sans-serif; border-bottom: 1px solid #ccc; padding-bottom: 5px; color: #555; }
+                    h2 { text-align: left; margin-top: 25px; font-family: 'Inter', sans-serif; border-bottom: 1px solid #ccc; padding-bottom: 5px; color: #555; font-size: 1.4em; } /* Increased font size for h2 */
+                    h3 { text-align: left; margin-top: 20px; font-family: 'Inter', sans-serif; padding-bottom: 5px; color: #555; font-size: 1.2em; }
                     table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
                     td { padding: 8px; border: 1px solid #ddd; vertical-align: top; }
                     td:first-child { width: 30%; font-weight: bold; background-color: #f2f2f2; }
                     p { text-align: center; margin-top: 40px; color: #777; }
-                    /* New print-specific styles for html2pdf to avoid breaking sections */
-                    .section-container {
-                        page-break-inside: avoid !important;
+                    /* Critical print-specific styles for html2pdf */
+                    .section-wrapper {
+                        page-break-before: always !important; /* Force page break before each section wrapper */
+                        page-break-inside: avoid !important;  /* Ensure section content doesn't break internally */
+                        orphans: 3; /* Avoid orphaned lines */
+                        widows: 3; /* Avoid widowed lines */
                     }
-                    table tr {
-                        page-break-inside: avoid !important;
-                    }
+                    /* Ensure tables and paragraphs within sections don't break across pages */
+                    table { page-break-inside: avoid !important; }
+                    table tr { page-break-inside: avoid !important; }
+                    p { page-break-inside: avoid !important; }
+                    ul, ol { page-break-inside: avoid !important; }
                 </style>
             </head>
             <body>
                 <h1>${record.mseId || 'Mental Status Examination Report'}</h1>
         `;
-
+        let firstSection = true;
         FormStructure.structure.forEach(section => {
             let sectionHtml = '';
             let hasContent = false;
@@ -336,24 +342,29 @@ const App = {
                     if (fieldId === 'patient-name') {
                         value = '********';
                     }
-                    sectionTable += `<tr><td>${label}</td><td>${value.replace(/\n/g, '<br/>')}</td></tr>`;
+                    // Attempt to convert multiline text into list items for better semantic structure if applicable
+                    if (value.includes('\n') && (label.toLowerCase().includes('complaints') || label.toLowerCase().includes('history'))) {
+                        value = `<ul><li>${value.split('\n').join('</li><li>')}</li></ul>`;
+                    }
+                    sectionTable += `<tr><td>${label}</td><td>${value}</td></tr>`;
                 }
             });
             sectionTable += `</table>`;
 
             if(hasContent){
-                // Wrap h3 and table in a div with section-container class
-                sectionHtml += `<div class="section-container">`;
-                sectionHtml += `<h3>${section.title}</h3>`;
+                // Wrap h2 and table in a div with section-wrapper class
+                sectionHtml += `<div class="section-wrapper" ${firstSection ? 'style="page-break-before: auto !important;"' : ''}>`; // First section doesn't need a page break before it
+                sectionHtml += `<h2>${section.title}</h2>`; // Use h2 for main sections
                 sectionHtml += sectionTable;
                 sectionHtml += `</div>`;
                 content += sectionHtml;
+                firstSection = false;
             }
         });
 
         if (record.data.customFields && record.data.customFields.length > 0) {
-            content += `<div class="section-container">`;
-            content += `<h3>Custom Fields</h3>`;
+            content += `<div class="section-wrapper">`;
+            content += `<h2>Custom Fields</h2>`; // Use h2 for custom fields section
             content += `<table>`;
             record.data.customFields.forEach(field => {
                 content += `<tr><td>${field.label}</td><td>${field.value.replace(/\n/g, '<br/>')}</td></tr>`;
@@ -373,7 +384,7 @@ const App = {
             filename: `${record.mseId || 'MSE'}-Report.pdf`,
             html2canvas: { scale: 2 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak: { mode: 'avoid-all' } // Use avoid-all mode to respect page-break-inside: avoid
+            pagebreak: { mode: ['css'], after: '.section-wrapper' } // Configure page break modes to use CSS and break after section-wrapper
         }).save();
     },
 
