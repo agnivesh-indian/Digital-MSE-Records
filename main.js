@@ -311,16 +311,6 @@ const App = {
                     td { padding: 8px; border: 1px solid #ddd; vertical-align: top; }
                     td:first-child { width: 30%; font-weight: bold; background-color: #f2f2f2; }
                     p { text-align: center; margin-top: 40px; color: #777; }
-                    /* Critical print-specific styles to avoid breaking content mid-line/mid-word */
-                    table { page-break-inside: avoid !important; }
-                    table tr { page-break-inside: avoid !important; }
-                    p { page-break-inside: avoid !important; }
-                    ul, ol { page-break-inside: avoid !important; }
-                    /* Ensure no text is split mid-line or mid-word */
-                    * {
-                        orphans: 3;
-                        widows: 3;
-                    }
                 </style>
             </head>
             <body>
@@ -344,13 +334,13 @@ const App = {
             sectionContent += `</table>`;
 
             if(hasContent){
-                content += `<h3>${section.title}</h3>`; // Revert to h3
+                content += `<h3>${section.title}</h3>`;
                 content += sectionContent;
             }
         });
 
         if (record.data.customFields && record.data.customFields.length > 0) {
-            content += `<h3>Custom Fields</h3>`; // Revert to h3
+            content += `<h3>Custom Fields</h3>`;
             content += `<table>`;
             record.data.customFields.forEach(field => {
                 content += `<tr><td>${field.label}</td><td>${field.value.replace(/\n/g, '<br/>')}</td></tr>`;
@@ -368,8 +358,7 @@ const App = {
             margin: 10,
             filename: `${record.mseId || 'MSE'}-Report.pdf`,
             html2canvas: { scale: 2 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } // Revert to simpler page break mode
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         }).save();
     },
 
