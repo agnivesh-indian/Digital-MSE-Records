@@ -198,7 +198,7 @@ const App = {
                     <div class="download-btn-group">
                         <button class="download-btn">Download</button>
                         <div class="download-options">
-                            <a href="#" onclick="App.generatePdf('${record.mseId}'); return false;">PDF</a>
+                            <a href="#" onclick="App.printRecord('${record.mseId}'); return false;">PDF</a>
                             <a href="#" onclick="App.generateDocx('${record.mseId}'); return false;">DOCX</a>
                         </div>
                     </div>
@@ -266,133 +266,124 @@ const App = {
     },
     
     // Report Generation (Existing, with minor updates to use new IDs)
-    generatePdfFromForm: function() {
-        const record = { data: { customFields: [] } };
-        document.querySelectorAll('input, select, textarea').forEach(el => {
-            if (el.id) {
-                if (el.id.startsWith('custom-')) {
-                    record.data.customFields.push({
-                        id: el.id,
-                        label: document.querySelector(`label[for=${el.id}]`).textContent,
-                        value: el.value
-                    });
-                } else if (el.id !== 'patient-name') {
-                    record.data[el.id] = el.type === 'checkbox' ? el.checked : el.value;
+        generatePdfFromForm: function() {
+            const record = { data: { customFields: [] } };
+            document.querySelectorAll('input, select, textarea').forEach(el => {
+                if (el.id) {
+                    if (el.id.startsWith('custom-')) {
+                        record.data.customFields.push({
+                            id: el.id,
+                            label: document.querySelector(`label[for=${el.id}]`).textContent,
+                            value: el.value
+                        });
+                    } else if (el.id !== 'patient-name') {
+                        record.data[el.id] = el.type === 'checkbox' ? el.checked : el.value;
+                    }
                 }
+            });
+            const name = document.getElementById('patient-name').value;
+            const age = document.getElementById('age').value;
+            const sex = document.getElementById('sex').value;
+            record.mseId = this.generateMseId(name, age, sex);
+            this.printRecord(record); // Call the new printRecord function
+        },
+    
+        printRecord: function(recordOrMseId) {
+            let record;
+            if (typeof recordOrMseId === 'string') {
+                record = this.getMseRecords().find(r => r.mseId === recordOrMseId);
+            } else {
+                record = recordOrMseId;
             }
-        });
-        const name = document.getElementById('patient-name').value;
-        const age = document.getElementById('age').value;
-        const sex = document.getElementById('sex').value;
-        record.mseId = this.generateMseId(name, age, sex);
-        this.generatePdf(record);
-    },
-
-    generateDocxFromForm: function() {
-        const record = { data: { customFields: [] } };
-        document.querySelectorAll('input, select, textarea').forEach(el => {
-            if (el.id) {
-                if (el.id.startsWith('custom-')) {
-                    record.data.customFields.push({
-                        id: el.id,
-                        label: document.querySelector(`label[for=${el.id}]`).textContent,
-                        value: el.value
-                    });
-                } else if (el.id !== 'patient-name') {
-                    record.data[el.id] = el.type === 'checkbox' ? el.checked : el.value;
-                }
-            }
-        });
-        const name = document.getElementById('patient-name').value;
-        const age = document.getElementById('age').value;
-        const sex = document.getElementById('sex').value;
-        record.mseId = this.generateMseId(name, age, sex);
-        this.generateDocx(record);
-    },
-
-    generatePdf: function(recordOrMseId) { // Updated to use mseId
-        let record;
-        if (typeof recordOrMseId === 'string') {
-            record = this.getMseRecords().find(r => r.mseId === recordOrMseId);
-        } else {
-            record = recordOrMseId;
-        }
-
-        if (!record) { alert('MSE Record not found.'); return; }
-
-        // According to jsPDF documentation for UMD builds, the global object is 'jspdf' (lowercase).
-        // The jsPDF class is then accessed as window.jspdf.jsPDF.
-        if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF === 'undefined') {
-            console.error('jsPDF library not loaded correctly. Global window.jspdf or window.jspdf.jsPDF is undefined.');
-            return;
-        }
-        const doc = new window.jspdf.jsPDF();
-
-        // --- Data Extraction and Table Generation ---
-        const generateTableBody = () => {
-            let body = [];
+    
+            if (!record) { alert('MSE Record not found.'); return; }
+    
+            let content = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>MSE Report</title>
+                    <style>
+                        body { font-family: 'Times New Roman', Times, serif; font-size: 12pt; margin: 20px; }
+                        h1 { text-align: center; color: #333; }
+                        h3 { text-align: left; margin-top: 20px; font-family: 'Inter', sans-serif; border-bottom: 1px solid #ccc; padding-bottom: 5px; color: #555; }
+                        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                        td { padding: 8px; border: 1px solid #ddd; vertical-align: top; }
+                        td:first-child { width: 30%; font-weight: bold; background-color: #f2f2f2; }
+                        p { text-align: center; margin-top: 40px; color: #777; }
+                        @media print {
+                            /* Add print-specific styles here if needed */
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>${record.mseId || 'Mental Status Examination Report'}</h1>
+            `;
+    
             FormStructure.structure.forEach(section => {
                 let hasContent = false;
-                let sectionBody = [];
+                let sectionContent = `<table>`;
                 section.fields.forEach(fieldId => {
-                    if (record.data[fieldId]) { // Only add if data exists
+                    if (record.data[fieldId]) {
                         hasContent = true;
                         let label = FormStructure.getLabel(fieldId);
                         let value = record.data[fieldId];
                         if (fieldId === 'patient-name') {
                             value = '********';
                         }
-                        sectionBody.push([label, value]);
+                        sectionContent += `<tr><td>${label}</td><td>${value.replace(/\n/g, '<br/>')}</td></tr>`;
                     }
                 });
-
+                sectionContent += `</table>`;
+    
                 if(hasContent){
-                    body.push([{ content: section.title, colSpan: 2, styles: { fontStyle: 'bold', fillColor: '#e9ecef', textColor: '#212529', halign: 'center' } }]);
-                    body.push(...sectionBody);
+                    content += `<h3>${section.title}</h3>${sectionContent}`;
                 }
             });
-
+    
             if (record.data.customFields && record.data.customFields.length > 0) {
-                body.push([{ content: 'Custom Fields', colSpan: 2, styles: { fontStyle: 'bold', fillColor: '#e9ecef', textColor: '#212529', halign: 'center' } }]);
+                content += `<h3>Custom Fields</h3>`;
+                content += `<table>`;
                 record.data.customFields.forEach(field => {
-                    body.push([field.label, field.value]);
+                    content += `<tr><td>${field.label}</td><td>${field.value.replace(/\n/g, '<br/>')}</td></tr>`;
                 });
+                content += `</table>`;
             }
-
-            return body;
-        };
-
-        doc.autoTable({
-            startY: 30,
-            body: generateTableBody(),
-            theme: 'grid',
-            styles: { font: 'times', cellPadding: 2.5, fontSize: 10, overflow: 'linebreak' },
-            columnStyles: {
-                0: { cellWidth: 50 },
-                1: { cellWidth: 'auto' }
-            },
-            showHead: 'never',
-            addPageContent: function(data) {
-                if (data.pageNumber === 1) {
-                    doc.setFontSize(20);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text('Mental Status Examination Report', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
-                    doc.setFontSize(14);
-                    doc.setFont('helvetica', 'normal');
-                    doc.text(`Record ID: ${record.mseId}`, doc.internal.pageSize.getWidth() / 2, 22, { align: 'center' });
+            
+            content += '<p>This report is created using the Digital MSE Record by Agnivesh_Indian.</p></body></html>';
+    
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(content);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            // Optionally, close after printing or give user control
+            // printWindow.onafterprint = () => printWindow.close();
+        },
+    
+        generateDocxFromForm: function() {
+            const record = { data: { customFields: [] } };
+            document.querySelectorAll('input, select, textarea').forEach(el => {
+                if (el.id) {
+                    if (el.id.startsWith('custom-')) {
+                        record.data.customFields.push({
+                            id: el.id,
+                            label: document.querySelector(`label[for=${el.id}]`).textContent,
+                            value: el.value
+                        });
+                    } else if (el.id !== 'patient-name') {
+                        record.data[el.id] = el.type === 'checkbox' ? el.checked : el.value;
+                    }
                 }
-
-                doc.setFontSize(10);
-                doc.setFont('helvetica', 'normal');
-                var str = "Page " + data.pageNumber + " of " + data.doc.internal.getNumberOfPages();
-                doc.text(str, doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
-            }
-        });
-
-        doc.save(`${record.mseId || 'MSE'}-Report.pdf`);
-    },
-
-    generateDocx: function(recordOrMseId) { // Updated to use mseId
+            });
+            const name = document.getElementById('patient-name').value;
+            const age = document.getElementById('age').value;
+            const sex = document.getElementById('sex').value;
+            record.mseId = this.generateMseId(name, age, sex);
+            this.generateDocx(record);
+        },
+    
+        generateDocx: function(recordOrMseId) { // Updated to use mseId
         let record;
         if (typeof recordOrMseId === 'string') {
             record = this.getMseRecords().find(r => r.mseId === recordOrMseId);
