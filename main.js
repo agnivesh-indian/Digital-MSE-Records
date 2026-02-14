@@ -320,11 +320,13 @@ const App = {
 
         if (!record) { alert('MSE Record not found.'); return; }
 
-        if (typeof window.jsPDF === 'undefined' || typeof window.jsPDF.jsPDF === 'undefined') {
-            alert('jsPDF library not loaded. Please ensure an active internet connection or that the library is available.');
+        // According to jsPDF documentation for UMD builds, the global object is 'jspdf' (lowercase).
+        // The jsPDF class is then accessed as window.jspdf.jsPDF.
+        if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF === 'undefined') {
+            console.error('jsPDF library not loaded correctly. Global window.jspdf or window.jspdf.jsPDF is undefined.');
             return;
         }
-        const doc = new window.jsPDF.jsPDF();
+        const doc = new window.jspdf.jsPDF();
 
         // --- Data Extraction and Table Generation ---
         const generateTableBody = () => {
@@ -401,7 +403,7 @@ const App = {
         if (!record) { alert('MSE Record not found.'); return; }
         
         if (typeof htmlDocx === 'undefined' || typeof htmlDocx.asBlob === 'undefined') {
-            alert('html-docx-js library not loaded. Please ensure an active internet connection or that the library is available.');
+            console.error('html-docx-js library not loaded. Please ensure an active internet connection or that the library is available.');
             return;
         }
         let content = `
