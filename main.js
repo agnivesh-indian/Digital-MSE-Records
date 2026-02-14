@@ -311,13 +311,19 @@ const App = {
                     td { padding: 8px; border: 1px solid #ddd; vertical-align: top; }
                     td:first-child { width: 30%; font-weight: bold; background-color: #f2f2f2; }
                     p { text-align: center; margin-top: 40px; color: #777; }
+                    /* Print specific styles for html2pdf */
+                    @media print {
+                        .html2pdf__page-break {
+                            break-before: page;
+                        }
+                    }
                 </style>
             </head>
             <body>
                 <h1>${record.mseId || 'Mental Status Examination Report'}</h1>
         `;
 
-        FormStructure.structure.forEach(section => {
+        FormStructure.structure.forEach((section, index) => {
             let hasContent = false;
             let sectionContent = `<table>`;
             section.fields.forEach(fieldId => {
@@ -334,12 +340,13 @@ const App = {
             sectionContent += `</table>`;
 
             if(hasContent){
-                content += `<h3>${section.title}</h3>${sectionContent}`;
+                // Add page break class to h3 elements for better pagination, except the very first one
+                content += `<h3 class="${index > 0 ? 'html2pdf__page-break' : ''}">${section.title}</h3>${sectionContent}`;
             }
         });
 
         if (record.data.customFields && record.data.customFields.length > 0) {
-            content += `<h3>Custom Fields</h3>`;
+            content += `<h3 class="html2pdf__page-break">Custom Fields</h3>`;
             content += `<table>`;
             record.data.customFields.forEach(field => {
                 content += `<tr><td>${field.label}</td><td>${field.value.replace(/\n/g, '<br/>')}</td></tr>`;
@@ -357,7 +364,8 @@ const App = {
             margin: 10,
             filename: `${record.mseId || 'MSE'}-Report.pdf`,
             html2canvas: { scale: 2 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } // Configure page break modes
         }).save();
     },
 
